@@ -1,14 +1,16 @@
-package com.example.eventify;
+package com.example.eventify.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class HomeActivity extends AppCompatActivity {
+import com.example.eventify.R;
+
+public class BuscarActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_buscar);
     }
 }
