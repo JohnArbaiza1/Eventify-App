@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.HomeActivity">
+    tools:context=".activities.HomeActivity"
+    android:background="@drawable/background_inicio">>
 
     <ImageView
         android:id="@+id/imageView3"
@@ -71,7 +72,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/menu"
         android:layout_width="390dp"
-        android:layout_height="66dp"
+        android:layout_height="72dp"
         android:background="#25DCCFCF"
         app:itemIconSize="16dp"
         app:itemTextColor="#510909"

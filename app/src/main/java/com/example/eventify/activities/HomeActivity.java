@@ -4,16 +4,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.eventify.CustomTypefaceSpan;
 import com.example.eventify.Fragments.HomeFragment;
 import com.example.eventify.Fragments.NotifiFragment;
 import com.example.eventify.Fragments.PerfilFragment;
@@ -61,6 +66,15 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+        // Cargar el tipo de letra personalizado desde assets
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "Aclonica.ttf");
+
+        // Iterar sobre los elementos del menú y aplicar el tipo de letra
+        Menu menu = menuOpciones.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem menuItem = menu.getItem(i);
+            applyFontToMenuItem(menuItem, typeface);
+        }
         menuOpciones.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -92,5 +106,10 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    private void applyFontToMenuItem(MenuItem menuItem, Typeface typeface) {
+        SpannableString title = new SpannableString(menuItem.getTitle());
+        title.setSpan(new CustomTypefaceSpan("", typeface), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        menuItem.setTitle(title);
     }
 }
