@@ -27,6 +27,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.eventify.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +51,7 @@ public class AgregarActivity extends AppCompatActivity {
     public EditText txt_nombre_eventos, txt_descripcion_eventos, txt_ubicacion_eventos, txt_cupos_eventos;
     public Spinner spinner_categoria_eventos;
     public Button btn_guardar_eventos;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +65,40 @@ public class AgregarActivity extends AppCompatActivity {
         txt_cupos_eventos = findViewById(R.id.cupos_eventos);
         spinner_categoria_eventos = findViewById(R.id.spinner_eventos);
         btn_guardar_eventos = findViewById(R.id.btn_guardar_eventos);
+        mAuth = FirebaseAuth.getInstance();
 
         image_click();
+        btn_guardar_eventos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("events_images");
+                StorageReference imageFilePath = storageReference.child(pickedImgUri.getLastPathSegment());
+                imageFilePath.putFile(pickedImgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        imageFilePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                //link de imagen ya proveniente de Firebase ********************
+                                //con mAutn se accede a la informacion del usuario en linea
+                                String image_download_link = uri.toString();
+                                Toast.makeText(AgregarActivity.this, image_download_link, Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
         // Agregar opciones al Spinner
         String[] opciones = {"Concierto", "Congreso", "Cumpleaños", "15 años", "Boda"};
@@ -140,6 +179,11 @@ public class AgregarActivity extends AppCompatActivity {
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 img_eventos.setImageBitmap(imageBitmap);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "Title", null);
+                Uri bitmapUri = Uri.parse(path);
+                pickedImgUri = bitmapUri;
+
+
             } else if (requestCode == REQUEST_GALLERY) {
                 // Selección desde la galería
                 if (data != null && data.getData() != null) {
