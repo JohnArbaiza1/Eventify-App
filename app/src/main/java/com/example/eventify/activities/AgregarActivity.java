@@ -1,9 +1,19 @@
 package com.example.eventify.activities;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,8 +22,19 @@ import android.widget.Spinner;
 
 import com.example.eventify.R;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class AgregarActivity extends AppCompatActivity {
 
+    static final int REQUEST_CAMERA = 1;
+    static final int REQUEST_GALLERY = 2;
+    public Uri pickedImgUri = null;
+    public Intent temporal;
+    static int REQUESCODE = 2;
     public ImageView img_eventos;
     public EditText txt_nombre_eventos, txt_descripcion_eventos, txt_ubicacion_eventos, txt_cupos_eventos;
     public Spinner spinner_categoria_eventos;
@@ -32,6 +53,8 @@ public class AgregarActivity extends AppCompatActivity {
         spinner_categoria_eventos = findViewById(R.id.spinner_eventos);
         btn_guardar_eventos = findViewById(R.id.btn_guardar_eventos);
 
+        image_click();
+
         // Agregar opciones al Spinner
         String[] opciones = {"Concierto", "Congreso", "Cumpleaños", "15 años", "Boda"};
 
@@ -39,4 +62,68 @@ public class AgregarActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_categoria_eventos.setAdapter(adapter);
     }
+
+    private void image_click() {
+        img_eventos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImagePickerOptions();
+            }
+        });
+    }
+
+    private void showImagePickerOptions() {
+        String[] options = {"Cámara", "Galería"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Seleccionar imagen desde:");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    openCamera();
+                } else {
+                    openGallery();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void openCamera() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(cameraIntent, REQUEST_CAMERA);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(cameraIntent, REQUEST_CAMERA);
+        }
+    }
+
+    private void openGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, REQUEST_GALLERY);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA) {
+                // Captura desde la cámara
+                if (pickedImgUri != null && data.getData() != null) {
+                    pickedImgUri = data.getData();
+                    // Mostrar la imagen capturada en img_eventos
+                    img_eventos.setImageURI(pickedImgUri);
+                }
+            } else if (requestCode == REQUEST_GALLERY) {
+                // Selección desde la galería
+                if (data != null && data.getData() != null) {
+                    pickedImgUri = data.getData();
+                    img_eventos.setImageURI(pickedImgUri);
+                }
+            }
+        }
+    }
+
 }

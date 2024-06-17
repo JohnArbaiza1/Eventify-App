@@ -23,11 +23,10 @@
         android:background="#2d2d2d"
         android:id="@+id/img_eventos"
         android:layout_width="320dp"
-        android:layout_height="190dp"
+        android:layout_height="200dp"
         android:layout_marginTop="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/agregar_imagen"
-        android:adjustViewBounds="true"/>
+        android:src="@drawable/agregar_imagen"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -111,6 +110,6 @@
         android:text="Guardar"
         android:backgroundTint="#24abfc"
         android:padding="13dp"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="10dp"/>
 
 </LinearLayout>
