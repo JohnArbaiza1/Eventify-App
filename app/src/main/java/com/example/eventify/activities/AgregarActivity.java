@@ -1,12 +1,17 @@
 package com.example.eventify.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -19,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.eventify.R;
 
@@ -82,7 +88,7 @@ public class AgregarActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    openCamera();
+                    checkCameraPermission();
                 } else {
                     openGallery();
                 }
@@ -91,11 +97,31 @@ public class AgregarActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void openCamera() {
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+        } else {
+            openCamara();
+        }
+
+    }
+    private void openCamara(){
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(cameraIntent, REQUEST_CAMERA);
+//          startActivityForResult(cameraIntent, REQUEST_CAMERA);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamara();
+            } else {
+                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -111,11 +137,9 @@ public class AgregarActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CAMERA) {
                 // Captura desde la cámara
-                if (pickedImgUri != null && data.getData() != null) {
-                    pickedImgUri = data.getData();
-                    // Mostrar la imagen capturada en img_eventos
-                    img_eventos.setImageURI(pickedImgUri);
-                }
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                img_eventos.setImageBitmap(imageBitmap);
             } else if (requestCode == REQUEST_GALLERY) {
                 // Selección desde la galería
                 if (data != null && data.getData() != null) {
