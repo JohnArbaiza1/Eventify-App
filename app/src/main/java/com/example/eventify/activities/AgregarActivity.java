@@ -128,7 +128,7 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                                         .build();
                                 eventoService eventoservice = retrofit.create(eventoService.class);
                                 Evento evento = new Evento(0, txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
-                                        txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), "15 de Septiembre de 2024", currenUser.getUid(),
+                                        txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
                                         currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), image_download_link, fechaCreacion());
 
                                 Log.d("AgregarEvento", "Evento a guardar: " + new Gson().toJson(evento));

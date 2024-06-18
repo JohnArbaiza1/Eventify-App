@@ -14,6 +14,9 @@ public interface eventoService {
     @GET("Eventos")
     Call<List<Categoria>> getCategoriasAll();
 
+    @GET("Eventos")
+    Call<List<Evento>> getEventosAll();
+
     @POST("Eventos")
     Call<Evento> saveEvento(@Body Evento evento);
 }
