@@ -18,7 +18,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,19 +28,34 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.eventify.Objets.Categoria;
+import com.example.eventify.Objets.Evento;
 import com.example.eventify.R;
+import com.example.eventify.services.categoriaService;
+import com.example.eventify.services.eventoService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AgregarActivity extends AppCompatActivity {
 
@@ -52,6 +69,9 @@ public class AgregarActivity extends AppCompatActivity {
     public Spinner spinner_categoria_eventos;
     public Button btn_guardar_eventos;
     FirebaseAuth mAuth;
+    FirebaseUser currenUser;
+    public List<String> opcionesSpinner;
+    public List<Categoria> categoriaList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +86,8 @@ public class AgregarActivity extends AppCompatActivity {
         spinner_categoria_eventos = findViewById(R.id.spinner_eventos);
         btn_guardar_eventos = findViewById(R.id.btn_guardar_eventos);
         mAuth = FirebaseAuth.getInstance();
+        currenUser = mAuth.getCurrentUser();
+        categoriaList = new ArrayList<>();
 
         image_click();
         btn_guardar_eventos.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +101,48 @@ public class AgregarActivity extends AppCompatActivity {
                         imageFilePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                //link de imagen ya proveniente de Firebase ********************
-                                //con mAutn se accede a la informacion del usuario en linea
+                                //****************** LOGICA PARA AGREGAR EVENTO **********************************//
+
                                 String image_download_link = uri.toString();
-                                Toast.makeText(AgregarActivity.this, image_download_link, Toast.LENGTH_SHORT).show();
+                                Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
+
+                                Retrofit retrofit = new Retrofit.Builder()
+                                        .baseUrl("http://192.168.1.11:3000/api/")
+                                        .addConverterFactory(GsonConverterFactory.create())
+                                        .build();
+                                eventoService eventoservice = retrofit.create(eventoService.class);
+                                Evento evento = new Evento(0, txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
+                                        txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), "15 de Septiembre de 2024", currenUser.getUid(),
+                                        currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), image_download_link, fechaCreacion());
+
+                                Log.d("AgregarEvento", "Evento a guardar: " + new Gson().toJson(evento));
+
+                                Call<Evento> guardarEvento = eventoservice.saveEvento(evento);
+                                guardarEvento.enqueue(new Callback<Evento>() {
+                                    @Override
+                                    public void onResponse(Call<Evento> call, Response<Evento> response) {
+                                        try {
+                                            if (response.isSuccessful()) {
+                                                Log.d("AgregarEvento", "Evento guardado: " + new Gson().toJson(response.body()));
+                                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                                Toast.makeText(AgregarActivity.this, "Agregado", Toast.LENGTH_SHORT).show();
+                                                startActivity(intent);
+                                            } else {
+                                                Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
+                                                Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Evento> call, Throwable t) {
+                                        Log.e("AgregarEvento", "Error al agregar evento", t);
+                                        Toast.makeText(AgregarActivity.this, "Fallo: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -99,15 +159,49 @@ public class AgregarActivity extends AppCompatActivity {
                 });
             }
         });
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        categoriaService categoriaservice = retrofit.create(categoriaService.class);
+        Call<List<Categoria>> obtener = categoriaservice.getCategoriasAll();
+        opcionesSpinner = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opcionesSpinner);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        obtener.enqueue(new Callback<List<Categoria>>() {
+            @Override
+            public void onResponse(Call<List<Categoria>> call, Response<List<Categoria>> response) {
+                if(response.isSuccessful() && response.body() !=null) {
+                    for (Categoria item : response.body()) {
+                        opcionesSpinner.add(item.getCategoria());
+                        categoriaList.add(item);
+                        //Toast.makeText(AgregarActivity.this, item.getIdCategoria(), Toast.LENGTH_SHORT).show();
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<List<Categoria>> call, Throwable t) {
+                System.out.println(t.getMessage());
+                Toast.makeText(AgregarActivity.this, "Fallo en obtener los datos", Toast.LENGTH_SHORT).show();
+            }
+        });
         // Agregar opciones al Spinner
         String[] opciones = {"Concierto", "Congreso", "Cumpleaños", "15 años", "Boda"};
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opciones);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_categoria_eventos.setAdapter(adapter);
     }
+    private String fechaCreacion(){
+        // Obtener la fecha actual
+        Date fechaActual = Calendar.getInstance().getTime();
 
+        // Definir el formato
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+
+        // Convertir la fecha a string
+        String fechaActualString = formatoFecha.format(fechaActual);
+        return fechaActualString;
+    }
     private void image_click() {
         img_eventos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,5 +287,12 @@ public class AgregarActivity extends AppCompatActivity {
             }
         }
     }
-
+    private Categoria buscarCategoriaPorNombre(List<Categoria> lista, String nombre) {
+        for (Categoria categoria : lista) {
+            if (categoria.getCategoria().equalsIgnoreCase(nombre)) {
+                return categoria;
+            }
+        }
+        return null; // Si no se encuentra la categoría
+    }
 }
