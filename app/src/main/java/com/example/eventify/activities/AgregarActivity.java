@@ -107,7 +107,7 @@ public class AgregarActivity extends AppCompatActivity {
                                 Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
 
                                 Retrofit retrofit = new Retrofit.Builder()
-                                        .baseUrl("http://192.168.1.11:3000/api/")
+                                        .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
                                         .addConverterFactory(GsonConverterFactory.create())
                                         .build();
                                 eventoService eventoservice = retrofit.create(eventoService.class);
