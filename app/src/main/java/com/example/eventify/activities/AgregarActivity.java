@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,11 +25,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.eventify.Fragments.DatePickerFragment;
 import com.example.eventify.Objets.Categoria;
 import com.example.eventify.Objets.Evento;
 import com.example.eventify.R;
@@ -57,7 +61,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AgregarActivity extends AppCompatActivity {
+public class AgregarActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     static final int REQUEST_CAMERA = 1;
     static final int REQUEST_GALLERY = 2;
@@ -65,7 +69,7 @@ public class AgregarActivity extends AppCompatActivity {
     public Intent temporal;
     static int REQUESCODE = 2;
     public ImageView img_eventos;
-    public EditText txt_nombre_eventos, txt_descripcion_eventos, txt_ubicacion_eventos, txt_cupos_eventos;
+    public EditText txt_nombre_eventos, txt_descripcion_eventos, txt_ubicacion_eventos, txt_cupos_eventos, txt_fecha_eventos;
     public Spinner spinner_categoria_eventos;
     public Button btn_guardar_eventos;
     FirebaseAuth mAuth;
@@ -85,11 +89,23 @@ public class AgregarActivity extends AppCompatActivity {
         txt_cupos_eventos = findViewById(R.id.cupos_eventos);
         spinner_categoria_eventos = findViewById(R.id.spinner_eventos);
         btn_guardar_eventos = findViewById(R.id.btn_guardar_eventos);
+
+        txt_fecha_eventos = findViewById(R.id.input_fecha); // Asociar EditText de fecha
+
         mAuth = FirebaseAuth.getInstance();
         currenUser = mAuth.getCurrentUser();
         categoriaList = new ArrayList<>();
 
         image_click();
+
+        // Configurar clic para el EditText de fecha
+        txt_fecha_eventos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
+
         btn_guardar_eventos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,6 +207,22 @@ public class AgregarActivity extends AppCompatActivity {
         String[] opciones = {"Concierto", "Congreso", "Cumpleaños", "15 años", "Boda"};
         spinner_categoria_eventos.setAdapter(adapter);
     }
+
+    // Método para mostrar el DatePickerDialog
+    private void showDatePickerDialog() {
+        DialogFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    // Implementación del método onDateSet del DatePickerDialog.OnDateSetListener
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        // Crear una cadena con la fecha seleccionada
+        String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+        // Mostrar la fecha seleccionada en el EditText de fecha
+        txt_fecha_eventos.setText(selectedDate);
+    }
+
     private String fechaCreacion(){
         // Obtener la fecha actual
         Date fechaActual = Calendar.getInstance().getTime();

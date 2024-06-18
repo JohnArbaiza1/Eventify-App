@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="40dp"
+    android:paddingTop="20dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="40dp"
     android:orientation="vertical"
     android:background="#F0EAD6"
     tools:context=".activities.AgregarActivity">
@@ -24,14 +26,14 @@
         android:id="@+id/img_eventos"
         android:layout_width="320dp"
         android:layout_height="200dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:scaleType="centerCrop"
         android:src="@drawable/agregar_imagen"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -47,7 +49,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -63,7 +65,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -80,14 +82,14 @@
         android:id="@+id/spinner_eventos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -99,6 +101,18 @@
             android:inputType="textPersonName"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <EditText
+        android:id="@+id/input_fecha"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/aclonica"
+        android:hint="Fecha"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true">
+    </EditText>
 
     <Button
         android:id="@+id/btn_guardar_eventos"
