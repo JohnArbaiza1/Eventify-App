@@ -103,15 +103,6 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     listEventos = response.body();
 
-                    for (Evento item: response.body()) {
-                        System.out.println("Nombre -> " + item.getNombreEvento());
-                        System.out.println("Asistentes -> " + item.getAsistentes());
-                        System.out.println("Ubicacion -> " + item.getUbicacion());
-                    }
-
-//                    // Configurar el adaptador y conectarlo al ListView
-//                    eventosAdapter = new EventosAdapter(getActivity().getApplicationContext(), listEventos);
-//                    listEventosListView.setAdapter(eventosAdapter);
                     eventosAdapter = new EventosAdapter(getContext().getApplicationContext(), listEventos);
                     listEventosListView.setAdapter(eventosAdapter);
                 } else {
