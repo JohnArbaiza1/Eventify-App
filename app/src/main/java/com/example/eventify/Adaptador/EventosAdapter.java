@@ -1,6 +1,7 @@
 package com.example.eventify.Adaptador;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import com.example.eventify.R;
 import org.w3c.dom.Text;
 
 import java.util.List;
+
+import com.example.eventify.activities.EventoDetalles;
 import com.squareup.picasso.Picasso;
 
 public class EventosAdapter extends BaseAdapter {
@@ -50,6 +53,26 @@ public class EventosAdapter extends BaseAdapter {
         TextView ubicacion = convertView.findViewById(R.id.ubicacionEventos);
 
         ImageView imagenEventos = convertView.findViewById(R.id.row_eventos);
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent eventosDetalles = new Intent(context, EventoDetalles.class);
+
+                eventosDetalles.putExtra("nombreEvento", dataEvento.get(position).getNombreEvento());
+                eventosDetalles.putExtra("imagenEvento", dataEvento.get(position).getImg());
+                eventosDetalles.putExtra("descripcionEvento", dataEvento.get(position).getDescripciN());
+                eventosDetalles.putExtra("asistenteEvento", String.valueOf(dataEvento.get(position).getAsistentes()));
+                eventosDetalles.putExtra("ubicacionEvento", dataEvento.get(position).getUbicacion());
+                eventosDetalles.putExtra("fechaCreacion", dataEvento.get(position).getFechaCreacion());
+                eventosDetalles.putExtra("fechaDelEvento", dataEvento.get(position).getFecha());
+                eventosDetalles.putExtra("categoriaEvento", dataEvento.get(position).getCategoria());
+                eventosDetalles.putExtra("nombrePersona", dataEvento.get(position).getUsername());
+
+                eventosDetalles.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(eventosDetalles);
+            }
+        });
 
         titulo.setText(dataEvento.get(position).getNombreEvento());
         asistentes.setText(String.valueOf(dataEvento.get(position).getAsistentes()));
