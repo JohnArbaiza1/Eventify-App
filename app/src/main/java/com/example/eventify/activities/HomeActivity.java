@@ -26,11 +26,15 @@ import com.example.eventify.Fragments.PerfilFragment;
 import com.example.eventify.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity {
     public ImageView agregar, buscar;
     public EditText buscador;
     public BottomNavigationView menuOpciones;
+    private boolean isAdmin = false;
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,14 @@ public class HomeActivity extends AppCompatActivity {
         buscar = findViewById(R.id.imgSearch);
         buscador = findViewById(R.id.txtBuscar);
         menuOpciones = findViewById(R.id.menu);
+        mAuth = FirebaseAuth.getInstance();
+        isAdmin = checkIfUserIsAdmin();
+
+        if(!isAdmin){
+            Menu menu = menuOpciones.getMenu();
+            menu.findItem(R.id.menuCategoria).setVisible(false);
+        }
+
         agregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +88,7 @@ public class HomeActivity extends AppCompatActivity {
             MenuItem menuItem = menu.getItem(i);
             applyFontToMenuItem(menuItem, typeface);
         }
+
         menuOpciones.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -110,10 +123,21 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
     private void applyFontToMenuItem(MenuItem menuItem, Typeface typeface) {
         SpannableString title = new SpannableString(menuItem.getTitle());
         title.setSpan(new CustomTypefaceSpan("", typeface), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         menuItem.setTitle(title);
     }
+
+    private boolean checkIfUserIsAdmin(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        boolean admin = false;
+        if(user.getEmail().toString() == "admin@gmail.com"){
+            admin = true;
+        }
+        return admin;
+    }
+
 }
