@@ -58,7 +58,7 @@ public class EventosAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Intent eventosDetalles = new Intent(context, EventoDetalles.class);
-
+                eventosDetalles.putExtra("id", dataEvento.get(position).getIdEvento().toString());
                 eventosDetalles.putExtra("nombreEvento", dataEvento.get(position).getNombreEvento());
                 eventosDetalles.putExtra("imagenEvento", dataEvento.get(position).getImg());
                 eventosDetalles.putExtra("descripcionEvento", dataEvento.get(position).getDescripciN());
