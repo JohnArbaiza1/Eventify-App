@@ -18,14 +18,14 @@
 
     <ImageView
         android:id="@+id/imageView8"
-        android:layout_width="394dp"
-        android:layout_height="118dp"
+        android:layout_width="404dp"
+        android:layout_height="137dp"
         app:layout_constraintBottom_toBottomOf="@+id/row_eventos"
         app:layout_constraintEnd_toEndOf="@+id/row_eventos"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/row_eventos"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tituloEventos"
@@ -34,15 +34,16 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/fondo_info"
         android:fontFamily="@font/aclonica"
         android:text="TITULO"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.066"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView8"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.004" />
 
     <TextView
         android:id="@+id/ubicacionEventos"
@@ -51,26 +52,26 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="8dp"
-        android:text="UBICACION"
         android:fontFamily="@font/aclonica"
+        android:text="UBICACION"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.072"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView8"
-        app:layout_constraintVertical_bias="0.894" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/asistenteEventos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="ASISTENTE"
+        android:layout_marginTop="176dp"
         android:fontFamily="@font/aclonica"
+        android:text="ASISTENTE"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/imageView8"
-        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="@+id/imageView8"
         app:layout_constraintTop_toBottomOf="@+id/tituloEventos" />
 
