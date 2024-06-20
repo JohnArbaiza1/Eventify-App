@@ -15,4 +15,9 @@
         android:title="Perfil"
         android:icon="@drawable/icon_perfil">
     </item>
+    <item
+        android:id="@+id/menuCategoria"
+        android:title="Categorias"
+        android:icon="@drawable/icon_perfil">
+    </item>
 </menu>

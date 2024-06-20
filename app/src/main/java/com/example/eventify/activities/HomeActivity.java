@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.eventify.CustomTypefaceSpan;
+import com.example.eventify.Fragments.CategoriasFragment;
 import com.example.eventify.Fragments.HomeFragment;
 import com.example.eventify.Fragments.NotifiFragment;
 import com.example.eventify.Fragments.PerfilFragment;
@@ -87,6 +88,9 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case R.id.menuPerfil:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new PerfilFragment()).commit();
+                        break;
+                    case R.id.menuCategoria:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new CategoriasFragment()).commit();
                         break;
                 }
                 return true;
