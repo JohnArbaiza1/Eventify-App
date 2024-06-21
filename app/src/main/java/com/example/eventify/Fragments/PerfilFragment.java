@@ -87,7 +87,7 @@ public class PerfilFragment extends Fragment {
         eventosPublicados.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Eventos Publicados", Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new EventsByUserFragment()).commit();
             }
         });
         inscripciones.setOnClickListener(new View.OnClickListener() {

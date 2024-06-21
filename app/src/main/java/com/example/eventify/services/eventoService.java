@@ -9,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface eventoService {
     @GET("Eventos")
@@ -19,4 +20,7 @@ public interface eventoService {
 
     @POST("Eventos")
     Call<Evento> saveEvento(@Body Evento evento);
+
+    @GET("EventosUser/{id}")
+    Call<List<Evento>> getEventoByUserId(@Path("id") String userId);
 }
