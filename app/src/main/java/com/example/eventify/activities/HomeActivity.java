@@ -31,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity {
     public ImageView agregar, buscar;
-    public EditText buscador;
     public BottomNavigationView menuOpciones;
     private boolean isAdmin = false;
     private FirebaseAuth mAuth;
@@ -41,7 +40,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         agregar = findViewById(R.id.imgAdd);
         buscar = findViewById(R.id.imgSearch);
-        buscador = findViewById(R.id.txtBuscar);
         menuOpciones = findViewById(R.id.menu);
         mAuth = FirebaseAuth.getInstance();
         isAdmin = checkIfUserIsAdmin();
@@ -63,22 +61,7 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, "Busqueda General", Toast.LENGTH_SHORT).show();
             }
         });
-        buscador.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Caracter", String.valueOf(s));
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
         // Cargar el tipo de letra personalizado desde assets
         Typeface typeface = Typeface.createFromAsset(getAssets(), "Aclonica.ttf");
 
@@ -134,7 +117,7 @@ public class HomeActivity extends AppCompatActivity {
     private boolean checkIfUserIsAdmin(){
         FirebaseUser user = mAuth.getCurrentUser();
         boolean admin = false;
-        if(user.getEmail().toString() == "admin@gmail.com"){
+        if(user.getEmail().equals("admin@gmail.com")){
             admin = true;
         }
         return admin;
