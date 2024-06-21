@@ -93,7 +93,7 @@ public class PerfilFragment extends Fragment {
         inscripciones.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Mis inscripciones", Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new RegisteredFragment()).commit();
             }
         });
         closeSession.setOnClickListener(new View.OnClickListener() {

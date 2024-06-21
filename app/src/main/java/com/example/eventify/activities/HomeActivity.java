@@ -23,6 +23,7 @@ import com.example.eventify.Fragments.CategoriasFragment;
 import com.example.eventify.Fragments.HomeFragment;
 import com.example.eventify.Fragments.NotifiFragment;
 import com.example.eventify.Fragments.PerfilFragment;
+import com.example.eventify.Fragments.RegisteredFragment;
 import com.example.eventify.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
