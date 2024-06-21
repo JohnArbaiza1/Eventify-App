@@ -6,9 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.example.eventify.Fragments.InvitacionesFragment;
 import com.example.eventify.Objets.Evento;
 import com.example.eventify.R;
 import com.squareup.picasso.Picasso;
@@ -57,6 +62,34 @@ public class eventosbyUserAdapter extends BaseAdapter {
         txtNombreEvento.setText(temporal.getNombreEvento());
         txtFechaEvento.setText(temporal.getFecha());
         txtCuposEvento.setText(String.valueOf(temporal.getAsistentes()));
+        //----------------------------------------------------------------------------
+        //Button para invitar amigos a eventos
+        Button btnInvitacion  = convertView.findViewById(R.id.btnInvitar);
+        //----------------------------------------------------------------------------
+        //Parte donde se trabajan los eventos
+        //----------------------------------------------------------------------------
+        //Evento del Button de invitacion
+        btnInvitacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //llamamos a la evento
+                traslada();
+
+            }
+        });
+
         return convertView;
+    }
+
+    //----------------------------------------------------------------------------
+    //Metodos
+    //----------------------------------------------------------------------------
+
+    //Metodo para mandar al usuario al fragment de invitacion + captura de la info
+    public void traslada(){
+        InvitacionesFragment invitaciones = new InvitacionesFragment();
+        //Realizamos la transaccion hacia fragmento con el formulario de invitacion
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragmentContainerView, invitaciones).addToBackStack(null).commit();//Agregamos una  pila de retroceso por fuera necesarioacaso
     }
 }

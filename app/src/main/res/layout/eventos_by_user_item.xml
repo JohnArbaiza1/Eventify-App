@@ -3,15 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:background="@drawable/fondo_publiaciones">
 
     <ImageView
         android:id="@+id/imageView11"
         android:layout_width="73dp"
         android:layout_height="68dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintHorizontal_bias="0.017"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_perfil" />
@@ -31,12 +33,12 @@
 
     <TextView
         android:id="@+id/txtNombre"
-        android:layout_width="230dp"
-        android:layout_height="40dp"
+        android:layout_width="227dp"
+        android:layout_height="38dp"
         android:layout_marginTop="8dp"
+        android:paddingLeft="5dp"
         android:text="TextView"
         android:textSize="13dp"
-        android:paddingLeft="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.65"
         app:layout_constraintStart_toEndOf="@+id/textView7"
@@ -60,9 +62,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:paddingTop="2dp"
         android:text="dd/MM/AA"
         android:textSize="13dp"
-        android:paddingTop="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.069"
         app:layout_constraintStart_toEndOf="@+id/textView17"
@@ -86,44 +88,57 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
+        android:paddingTop="3dp"
         android:text="0000"
         android:textSize="13dp"
-        android:paddingTop="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.081"
         app:layout_constraintStart_toEndOf="@+id/textView19"
         app:layout_constraintTop_toBottomOf="@+id/txtNombre" />
 
-    <ImageView
-        android:id="@+id/imgEdit"
-        android:layout_width="33dp"
-        android:layout_height="30dp"
+    <Button
+        android:id="@+id/btnInvitar"
+        android:layout_width="123dp"
+        android:layout_height="37dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="Invitar"
+        android:textStyle="bold"
+        app:icon="@drawable/friend"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.433"
-        app:layout_constraintStart_toEndOf="@+id/txtFecha"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombre"
-        app:srcCompat="@drawable/icon_edit_event" />
-
-    <ImageView
-        android:id="@+id/imgSee"
-        android:layout_width="33dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imgEdit"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombre"
-        app:srcCompat="@drawable/icon_see" />
+        app:layout_constraintTop_toBottomOf="@+id/textView19" />
 
     <ImageView
         android:id="@+id/imgDelete"
         android:layout_width="33dp"
         android:layout_height="30dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnInvitar"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imgSee"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombre"
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
         app:srcCompat="@drawable/icon_delete" />
+
+    <ImageView
+        android:id="@+id/imgSee"
+        android:layout_width="33dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnInvitar"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imgEdit"
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
+        app:srcCompat="@drawable/icon_see" />
+
+    <ImageView
+        android:id="@+id/imgEdit"
+        android:layout_width="31dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnInvitar"
+        app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView19"
+        app:srcCompat="@drawable/icon_edit_event" />
 </androidx.constraintlayout.widget.ConstraintLayout>

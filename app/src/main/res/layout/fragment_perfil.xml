@@ -18,7 +18,6 @@
             android:layout_marginTop="4dp"
             android:src="@drawable/icon_perfil"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,11 +25,12 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="Nombre de Usuario"
-            android:textSize="15dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.135"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
@@ -38,53 +38,53 @@
             android:id="@+id/txtUserName"
             android:layout_width="177dp"
             android:layout_height="28dp"
-            android:layout_marginTop="104dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
             android:paddingTop="3dp"
+            android:fontFamily="@font/aclonica"
             android:text="Username"
-            android:textSize="14dp"
-            android:textStyle="bold"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.192"
-            app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <TextView
             android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="48dp"
             android:text="Correo:"
-            android:textSize="15dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.103"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <TextView
             android:id="@+id/txtUserEmail"
             android:layout_width="295dp"
-            android:layout_height="53dp"
-            android:layout_marginTop="24dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/aclonica"
+            android:gravity="center"
+            android:paddingLeft="3dp"
             android:paddingTop="3dp"
             android:text="TextView"
-            android:textSize="15dp"
-            android:paddingLeft="3dp"
-            android:textStyle="bold"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.058"
-            app:layout_constraintStart_toEndOf="@+id/textView10"
-            app:layout_constraintTop_toBottomOf="@+id/txtUserName" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
         <LinearLayout
             android:layout_width="392dp"
             android:layout_height="549dp"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.473"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtUserEmail"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintTop_toBottomOf="@+id/txtUserEmail">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,8 +114,8 @@
                     android:id="@+id/imageView5"
                     android:layout_width="wrap_content"
                     android:layout_height="53dp"
-                    android:paddingLeft="40dp"
                     android:layout_weight="1"
+                    android:paddingLeft="40dp"
                     android:src="@drawable/icon_inactive_account" />
 
                 <TextView
@@ -132,9 +132,9 @@
 
             <LinearLayout
                 android:id="@+id/eventosPublicados"
-                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -157,9 +157,9 @@
 
             <LinearLayout
                 android:id="@+id/inscripciones"
-                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -182,9 +182,9 @@
 
             <LinearLayout
                 android:id="@+id/cerrarSesion"
-                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -198,11 +198,11 @@
                     android:id="@+id/textView16"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="15dp"
                     android:layout_marginTop="9dp"
                     android:layout_weight="1"
-                    android:text="Cerrar Sesion" />
+                    android:text="Cerrar Sesion"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>
