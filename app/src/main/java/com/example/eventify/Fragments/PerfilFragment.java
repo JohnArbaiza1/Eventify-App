@@ -1,14 +1,25 @@
 package com.example.eventify.Fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.eventify.R;
+import com.example.eventify.activities.loginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +36,7 @@ public class PerfilFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private FirebaseAuth mAuth;
 
     public PerfilFragment() {
         // Required empty public constructor
@@ -61,6 +73,58 @@ public class PerfilFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_perfil, container, false);
+        View root = inflater.inflate(R.layout.fragment_perfil, container, false);
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        TextView userName = root.findViewById(R.id.txtUserName);
+        TextView userEmail = root.findViewById(R.id.txtUserEmail);
+        LinearLayout eventosPublicados = root.findViewById(R.id.eventosPublicados);
+        LinearLayout inscripciones = root.findViewById(R.id.inscripciones);
+        LinearLayout closeSession = root.findViewById(R.id.cerrarSesion);
+        userName.setText(currentUser.getDisplayName());
+        userEmail.setText(currentUser.getEmail());
+
+        eventosPublicados.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Eventos Publicados", Toast.LENGTH_SHORT).show();
+            }
+        });
+        inscripciones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Mis inscripciones", Toast.LENGTH_SHORT).show();
+            }
+        });
+        closeSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Cierre de Sesión");
+                builder.setMessage("¿Su sesión será cancelada, esta seguro de realizar esta acción?");
+                builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            mAuth.signOut();
+                            Intent intent = new Intent(getContext(), loginActivity.class);
+                            startActivity(intent);
+                            Toast.makeText(getContext(), "Sesión Cerrada", Toast.LENGTH_SHORT).show();
+                            getActivity().finish();
+                        }catch (Exception e){
+                            Log.d("Error",e.getMessage());
+                        }
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getContext(), "Cierre de Sesión Cancelado", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.show().create();
+            }
+        });
+        return  root;
     }
 }
