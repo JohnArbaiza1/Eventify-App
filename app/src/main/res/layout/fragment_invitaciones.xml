@@ -24,8 +24,8 @@
 
         <TextView
             android:id="@+id/textView18"
-            android:layout_width="409dp"
-            android:layout_height="49dp"
+            android:layout_width="386dp"
+            android:layout_height="50dp"
             android:layout_marginTop="4dp"
             android:gravity="center"
             android:text="En este apartado puedes invitar a tus amigos a los eventos que has publicado en la App."

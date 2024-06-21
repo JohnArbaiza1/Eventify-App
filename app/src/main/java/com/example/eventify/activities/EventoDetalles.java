@@ -3,6 +3,7 @@ package com.example.eventify.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -96,7 +97,7 @@ public class EventoDetalles extends AppCompatActivity {
         btnInscribirseEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference eventoRef = mdataBase.child("Eventos").child(id);
+                DatabaseReference eventoRef = mdataBase.child("Cupos").child(id);
                 eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -149,7 +150,6 @@ public class EventoDetalles extends AppCompatActivity {
                             }
                         }
                         else{
-
                             Map<String, Object> datosEvento = new HashMap<>();
                             datosEvento.put(currenUser.getDisplayName().toString(),currenUser.getEmail());
                             eventoRef.setValue(datosEvento).
@@ -181,7 +181,7 @@ public class EventoDetalles extends AppCompatActivity {
     }
 
     private void verificarCupos(String id, String asistenteEvento) {
-        DatabaseReference eventoRef = mdataBase.child("Eventos").child(id);
+        DatabaseReference eventoRef = mdataBase.child("Cupos").child(id);
 
         eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -208,7 +208,7 @@ public class EventoDetalles extends AppCompatActivity {
     }
     private void validarBoton(String id){
         FirebaseUser init = mAuth.getCurrentUser();
-        DatabaseReference eventoRef = mdataBase.child("Eventos").child(id);
+        DatabaseReference eventoRef = mdataBase.child("Cupos").child(id);
         eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -237,4 +237,5 @@ public class EventoDetalles extends AppCompatActivity {
             }
         });
     }
+
 }
