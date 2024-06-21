@@ -54,20 +54,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_search" />
 
-    <EditText
-        android:id="@+id/txtBuscar"
-        android:layout_width="273dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/fondo_search"
-        android:ems="10"
-        android:hint="Search"
-        android:inputType="text"
-        android:paddingLeft="15dp"
-        android:textSize="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/menu"
@@ -78,17 +64,17 @@
         app:itemTextColor="#510909"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtBuscar"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.027"
         app:menu="@menu/menu_item" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="com.example.eventify.Fragments.HomeFragment"
-        android:layout_width="404dp"
-        android:layout_height="609dp"
+        android:layout_width="397dp"
+        android:layout_height="626dp"
         android:background="#B0EEDBD2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

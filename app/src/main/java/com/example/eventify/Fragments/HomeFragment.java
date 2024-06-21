@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class HomeFragment extends Fragment {
 
     public EventosAdapter eventosAdapter;
     public ListView listEventosListView;
+    public EditText txtBuscar;
     public List<Evento> listEventos;
 
     public HomeFragment() {
@@ -86,6 +88,7 @@ public class HomeFragment extends Fragment {
 
         listEventosListView = root.findViewById(R.id.listEventos);
         listEventos = new ArrayList<>(); // Lista para almacenar los eventos
+        txtBuscar = root.findViewById(R.id.txtBuscar);
 
         // Configurar Retrofit
         Retrofit retrofit = new Retrofit.Builder()
