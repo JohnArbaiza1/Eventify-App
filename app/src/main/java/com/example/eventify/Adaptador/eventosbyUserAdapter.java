@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -73,8 +74,7 @@ public class eventosbyUserAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 //llamamos a la evento
-                traslada();
-
+                traslada(position);
             }
         });
 
@@ -86,10 +86,21 @@ public class eventosbyUserAdapter extends BaseAdapter {
     //----------------------------------------------------------------------------
 
     //Metodo para mandar al usuario al fragment de invitacion + captura de la info
-    public void traslada(){
-        InvitacionesFragment invitaciones = new InvitacionesFragment();
-        //Realizamos la transaccion hacia fragmento con el formulario de invitacion
-        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragmentContainerView, invitaciones).addToBackStack(null).commit();//Agregamos una  pila de retroceso por fuera necesarioacaso
+    public void traslada(int position){
+        //Validamos que no tengamos datos nulos
+        if (listEventos != null && position >= 0 && position < listEventos.size()) {
+            //Obtenemos la posicion del evento para capturar sus datos
+            String dataCategoria = listEventos.get(position).getCategoria();
+            String dataName = listEventos.get(position).getNombreEvento();
+            String dataDate = listEventos.get(position).getFecha();
+            String dataIMG = listEventos.get(position).getImg();
+            //System.out.println("Datos mandados: "+ dataName +" | " + dataCategoria +" | " + dataDate +" | " + dataIMG);
+            InvitacionesFragment invitaciones = InvitacionesFragment.newInstance(dataCategoria, dataName, dataDate, dataIMG);
+            //Realizamos la transaccion hacia fragmento con el formulario de invitacion
+            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContainerView, invitaciones).addToBackStack(null).commit();//Agregamos una  pila de retroceso por fuera necesarioacaso
+        }else{
+            Toast.makeText(context, "Error: Parece que algo salio mal", Toast.LENGTH_SHORT).show();
+        }
     }
 }
