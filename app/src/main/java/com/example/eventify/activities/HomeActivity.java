@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         isAdmin = checkIfUserIsAdmin();
 
+
         if(!isAdmin){
             Menu menu = menuOpciones.getMenu();
             menu.findItem(R.id.menuCategoria).setVisible(false);
@@ -72,7 +73,21 @@ public class HomeActivity extends AppCompatActivity {
             MenuItem menuItem = menu.getItem(i);
             applyFontToMenuItem(menuItem, typeface);
         }
-
+        String fragmentToOpen = getIntent().getStringExtra("abrirInscripciones");
+        if (fragmentToOpen != null) {
+            if (fragmentToOpen.equals("Incripciones")) {
+                // Cargar el fragmento de favoritos
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainerView, new RegisteredFragment())
+                        .commit();
+                menuOpciones.setSelectedItemId(R.id.menuPerfil);
+            } else {
+                // Cargar el fragmento por defecto (por ejemplo, HomeFragment)
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainerView, new HomeFragment())
+                        .commit();
+            }
+        }
         menuOpciones.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

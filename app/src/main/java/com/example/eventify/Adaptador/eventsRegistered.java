@@ -63,10 +63,29 @@ public class eventsRegistered extends BaseAdapter {
         ImageView imgEvento = convertView.findViewById(R.id.imageView12);
         TextView txtNombre = convertView.findViewById(R.id.txtNombre);
         TextView txtFechaEvento = convertView.findViewById(R.id.txtFecha);
+        Button btnVer = convertView.findViewById(R.id.btnVer);
         Evento tem = listaRegistrados.get(position);
         Picasso.get().load(String.valueOf(tem.getImg())).into(imgEvento);
         txtNombre.setText(tem.getNombreEvento());
         txtFechaEvento.setText(tem.getFecha());
+        btnVer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent eventosDetalles = new Intent(context, EventoDetalles.class);
+                eventosDetalles.putExtra("id", tem.getIdEvento().toString());
+                eventosDetalles.putExtra("nombreEvento", tem.getNombreEvento());
+                eventosDetalles.putExtra("imagenEvento", tem.getImg());
+                eventosDetalles.putExtra("descripcionEvento", tem.getDescripciN());
+                eventosDetalles.putExtra("asistenteEvento", String.valueOf(tem.getAsistentes()));
+                eventosDetalles.putExtra("ubicacionEvento", tem.getUbicacion());
+                eventosDetalles.putExtra("fechaCreacion", tem.getFechaCreacion());
+                eventosDetalles.putExtra("fechaDelEvento", tem.getFecha());
+                eventosDetalles.putExtra("categoriaEvento", tem.getCategoria());
+                eventosDetalles.putExtra("nombrePersona", tem.getUsername());
+                eventosDetalles.putExtra("ListaInscripcion","Eliminar");
+                context.startActivity(eventosDetalles);
+            }
+        });
         return convertView;
     }
 }

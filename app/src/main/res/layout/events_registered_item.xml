@@ -48,7 +48,7 @@
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32dp"
         android:text="Fecha:"
         android:textSize="15dp"
         android:textStyle="bold"
@@ -61,7 +61,7 @@
         android:id="@+id/txtFecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="16dp"
         android:paddingTop="1dp"
         android:text="dd/MM/AA"
         android:textSize="13dp"
@@ -70,5 +70,19 @@
         app:layout_constraintStart_toEndOf="@+id/textView17"
         app:layout_constraintTop_toBottomOf="@+id/txtNombre" />
 
-
+    <Button
+        android:id="@+id/btnVer"
+        android:layout_width="150dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="Visualizar"
+        android:textSize="14dp"
+        android:textStyle="bold"
+        android:backgroundTint="#125510"
+        app:icon="@drawable/icon_see"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.542"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtNombre" />
 </androidx.constraintlayout.widget.ConstraintLayout>

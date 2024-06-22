@@ -91,6 +91,7 @@ public class EventoDetalles extends AppCompatActivity {
 
         String nombrePersona = getIntent().getExtras().getString("nombrePersona");
         txtNombrePersona.setText("Publicado por: " + nombrePersona);
+        String ListaInscripcion = getIntent().getExtras().getString("ListaInscripcion");
 
         //sesion del usuario actual:
         FirebaseUser currenUser = mAuth.getCurrentUser();
@@ -98,84 +99,125 @@ public class EventoDetalles extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DatabaseReference eventoRef = mdataBase.child("Cupos").child(id);
-                eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            boolean isAlreadyRegistered = false;
-                            String registeredKey = null;
-                            for (DataSnapshot child : snapshot.getChildren()) {
-                                String correo = child.getValue(String.class);
-                                if (correo != null && correo.equals(currenUser.getEmail())) {
-                                    isAlreadyRegistered = true;
-                                    registeredKey = child.getKey();
-                                    break;
+                if(ListaInscripcion != null) {
+                    eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                String registeredKey = null;
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    String correo = child.getValue(String.class);
+                                    if (correo != null && correo.equals(currenUser.getEmail())) {
+                                        registeredKey = child.getKey();
+                                        break;
+                                    }
                                 }
-                            }
-                            if(isAlreadyRegistered){
                                 eventoRef.child(registeredKey).removeValue()
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    btnInscribirseEvento.setText("INSCRIBIRSE");
-                                                    int colorPersonalizado = Color.rgb(255, 130, 4);
-                                                    btnInscribirseEvento.setBackgroundColor(colorPersonalizado);
                                                     Toast.makeText(EventoDetalles.this, "Desinscrito del Evento", Toast.LENGTH_SHORT).show();
-                                                    verificarCupos(id, asistencia); // Actualizar cupos después de desinscribirse
+                                                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                                    intent.putExtra("abrirInscripciones", "Incripciones");
+                                                    startActivity(intent);
+                                                    finish();
                                                 } else {
                                                     Toast.makeText(EventoDetalles.this, "Error al desinscribirse", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
+
                             }
-                            else {
-                                Map<String, Object> correos = new HashMap<>();
-                                correos.put(currenUser.getDisplayName().toString(), currenUser.getEmail());
-                                eventoRef.updateChildren(correos).
-                                        addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    btnInscribirseEvento.setText("Anular Inscripcion");
-                                                    int colorRojo = Color.rgb(255, 0, 0);
-                                                    btnInscribirseEvento.setBackgroundColor(colorRojo);
-                                                    Toast.makeText(EventoDetalles.this, "Registrado al Evento", Toast.LENGTH_SHORT).show();
-                                                    verificarCupos(id, asistencia);
-                                                } else {
-                                                    Toast.makeText(EventoDetalles.this, "Error al registrarse", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(EventoDetalles.this, "Error de Referencia", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else{
+                    eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                boolean isAlreadyRegistered = false;
+                                String registeredKey = null;
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    String correo = child.getValue(String.class);
+                                    if (correo != null && correo.equals(currenUser.getEmail())) {
+                                        isAlreadyRegistered = true;
+                                        registeredKey = child.getKey();
+                                        break;
+                                    }
+                                }
+                                if(isAlreadyRegistered){
+                                    eventoRef.child(registeredKey).removeValue()
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        btnInscribirseEvento.setText("INSCRIBIRSE");
+                                                        int colorPersonalizado = Color.rgb(255, 130, 4);
+                                                        btnInscribirseEvento.setBackgroundColor(colorPersonalizado);
+                                                        Toast.makeText(EventoDetalles.this, "Desinscrito del Evento", Toast.LENGTH_SHORT).show();
+                                                        verificarCupos(id, asistencia); // Actualizar cupos después de desinscribirse
+                                                    } else {
+                                                        Toast.makeText(EventoDetalles.this, "Error al desinscribirse", Toast.LENGTH_SHORT).show();
+                                                    }
                                                 }
+                                            });
+                                }
+                                else {
+                                    Map<String, Object> correos = new HashMap<>();
+                                    correos.put(currenUser.getDisplayName().toString(), currenUser.getEmail());
+                                    eventoRef.updateChildren(correos).
+                                            addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        btnInscribirseEvento.setText("Anular Inscripcion");
+                                                        int colorRojo = Color.rgb(255, 0, 0);
+                                                        btnInscribirseEvento.setBackgroundColor(colorRojo);
+                                                        Toast.makeText(EventoDetalles.this, "Registrado al Evento", Toast.LENGTH_SHORT).show();
+                                                        verificarCupos(id, asistencia);
+                                                    } else {
+                                                        Toast.makeText(EventoDetalles.this, "Error al registrarse", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
+                            else{
+                                Map<String, Object> datosEvento = new HashMap<>();
+                                datosEvento.put(currenUser.getDisplayName().toString(),currenUser.getEmail());
+                                eventoRef.setValue(datosEvento).
+                                        addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                btnInscribirseEvento.setText("Anular Inscripcion");
+                                                int colorRojo = Color.rgb(255, 0, 0);
+                                                btnInscribirseEvento.setBackgroundColor(colorRojo);
+                                                Toast.makeText(EventoDetalles.this, "Agregado", Toast.LENGTH_SHORT).show();
+                                                verificarCupos(id, asistencia);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(EventoDetalles.this, "Fallo", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }
                         }
-                        else{
-                            Map<String, Object> datosEvento = new HashMap<>();
-                            datosEvento.put(currenUser.getDisplayName().toString(),currenUser.getEmail());
-                            eventoRef.setValue(datosEvento).
-                                    addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            btnInscribirseEvento.setText("Anular Inscripcion");
-                                            int colorRojo = Color.rgb(255, 0, 0);
-                                            btnInscribirseEvento.setBackgroundColor(colorRojo);
-                                            Toast.makeText(EventoDetalles.this, "Agregado", Toast.LENGTH_SHORT).show();
-                                            verificarCupos(id, asistencia);
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(EventoDetalles.this, "Fallo", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(EventoDetalles.this, "Error de Referencia", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(EventoDetalles.this, "Error de Referencia", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+
             }
         });
     }
