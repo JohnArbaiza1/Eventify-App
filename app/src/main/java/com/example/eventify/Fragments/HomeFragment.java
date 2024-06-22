@@ -1,5 +1,6 @@
 package com.example.eventify.Fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -105,9 +106,15 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<List<Evento>> call, Response<List<Evento>> response) {
                 if (response.isSuccessful()) {
                     listEventos = response.body();
+                    Context context = getContext();
+                    if(context !=null){
+                        eventosAdapter = new EventosAdapter(context.getApplicationContext(), listEventos);
+                        listEventosListView.setAdapter(eventosAdapter);
+                    }
+                    else{
+                        Log.d("Contexto", "contexto nulo");
+                    }
 
-                    eventosAdapter = new EventosAdapter(getContext().getApplicationContext(), listEventos);
-                    listEventosListView.setAdapter(eventosAdapter);
                 } else {
                     Toast.makeText(getActivity(), "Error al obtener los eventos", Toast.LENGTH_SHORT).show();
                 }
