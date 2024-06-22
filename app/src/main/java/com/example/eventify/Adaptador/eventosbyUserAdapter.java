@@ -77,6 +77,24 @@ public class eventosbyUserAdapter extends BaseAdapter {
                 traslada(position);
             }
         });
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Editando", Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnVer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Visualizando", Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Eliminando", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return convertView;
     }
