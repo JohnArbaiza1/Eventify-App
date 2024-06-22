@@ -2,6 +2,8 @@ package com.example.eventify.Fragments;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -54,9 +58,9 @@ public class InvitacionesFragment extends Fragment {
     //Varables empleadas para el funcionamiento del envio del correo
     private static String emailFrom = "eventifyassistant@gmail.com"; //almacena el correo desde donde se envia el correo
     private static String passwordEmail = "tvrrqcsrzbvicuoj";
-    private static String emailTo; //Almacena el correo al que se envia la inviatcion
-    private static String subject;
-    private static String nameUser;
+    private  String emailTo; //Almacena el correo al que se envia la inviatcion
+    private  String subject;
+    private  String nameUser;
 
     //-------------------------------------------------------------------
 
@@ -128,27 +132,45 @@ public class InvitacionesFragment extends Fragment {
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Recuperamos los datos
-                Bundle args = getArguments();
-                //Verificamos que no existan valores nulos
-                if (args != null) {
-                    categoria = args.getString("categoria");
-                    nombreEvento = args.getString("nombreEvento");
-                    fecha = args.getString("fecha");
-                    img = args.getString("img");
-                    System.out.println("Datos Recibidos: "+ categoria +" | " + nombreEvento +" | " + fecha +" | " + img);
+                if(correo.getText().toString().isEmpty() && name.getText().toString().isEmpty() && asunto.getText().toString().isEmpty()){
+                    Toast.makeText(getContext(), "Debe Ingresar los datos requeridos", Toast.LENGTH_SHORT).show();
+                }else{
+                    //Recuperamos los datos
+                    Bundle args = getArguments();
+                    //Verificamos que no existan valores nulos
+                    if (args != null) {
+                        categoria = args.getString("categoria");
+                        nombreEvento = args.getString("nombreEvento");
+                        fecha = args.getString("fecha");
+                        img = args.getString("img");
+                        System.out.println("Datos Recibidos: "+ categoria +" | " + nombreEvento +" | " + fecha +" | " + img);
+                    }
+                    else{
+                        System.out.println("No hay datos disponibles");
+                    }
+                    emailTo = correo.getText().toString();
+                    nameUser = name.getText().toString();
+                    subject = asunto.getText().toString();
+                    //Validamos que ninguna de las avraibles de contenido del correo esten vacias
+                    if(emailTo.isEmpty() || nameUser.isEmpty() || subject.isEmpty()){
+                        Toast.makeText(getContext(), "Debe Ingresar los datos requeridos", Toast.LENGTH_SHORT).show();
+                    }
+                    else if (!validarEmail(emailTo)) {
+                        // Validamos el formato del correo
+                        Toast.makeText(getContext(), "Formato de correo no válido", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        //llamamos a las funciones empleada
+                        sendEmail();
+                        Toast.makeText(getContext(), "Invitacion enviada", Toast.LENGTH_SHORT).show();
+                        //Limpiamos los EditText
+                        correo.setText("");
+                        name.setText("");
+                        asunto.setText("");
+                    }
                 }
-                else{
-                    System.out.println("No hay datos disponibles");
-                }
-
-                //llamamos a las funciones empleadas
-                createCorreo();
-                sendEmail();
-
             }
         });
-
 
         return root;
     }
@@ -156,17 +178,13 @@ public class InvitacionesFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
     //Metodos
     //----------------------------------------------------------------------------------------------
-    //Metodo encargado de obtener los datos para poder crear el correo
-    private void createCorreo(){
-        //validamos que no se reciban datos vacios
-        if(correo.getText().toString().isEmpty() && name.getText().toString().isEmpty() && asunto.getText().toString().isEmpty()){
-            Toast.makeText(getContext(), "Debe Ingresar los datos requeridos", Toast.LENGTH_SHORT).show();
-        } else {
-            emailTo = correo.getText().toString();
-            nameUser = name.getText().toString();
-            subject = asunto.getText().toString();
-            Toast.makeText(getContext(), "Invitacion enviada", Toast.LENGTH_SHORT).show();
-        }
+    //Metodo encargado de validar el correo
+    private boolean validarEmail(String email) {
+        // Expresión regular para validar el formato del correo
+        String regex = "^[\\w\\.-]+@([\\w-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches() && email.contains("gmail.com");
     }
 
     //Metodo encargado de leer el archivo html
