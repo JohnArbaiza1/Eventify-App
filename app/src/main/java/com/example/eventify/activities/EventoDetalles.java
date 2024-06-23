@@ -170,7 +170,7 @@ public class EventoDetalles extends AppCompatActivity {
                                 }
                                 else {
                                     Map<String, Object> correos = new HashMap<>();
-                                    correos.put(currenUser.getDisplayName().toString(), currenUser.getEmail());
+                                    correos.put(currenUser.getUid().toString(), currenUser.getEmail());
                                     eventoRef.updateChildren(correos).
                                             addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
@@ -190,7 +190,7 @@ public class EventoDetalles extends AppCompatActivity {
                             }
                             else{
                                 Map<String, Object> datosEvento = new HashMap<>();
-                                datosEvento.put(currenUser.getDisplayName().toString(),currenUser.getEmail());
+                                datosEvento.put(currenUser.getUid().toString(),currenUser.getEmail());
                                 eventoRef.setValue(datosEvento).
                                         addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override

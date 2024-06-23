@@ -2,13 +2,28 @@ package com.example.eventify.Fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.eventify.Adaptador.notificacionAdapter;
+import com.example.eventify.Objets.Notificacion;
 import com.example.eventify.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +40,11 @@ public class NotifiFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    public List<Notificacion> listaFirebase;
+    public notificacionAdapter adapter;
+    public ListView lista;
+    private FirebaseAuth mAuth;
+    private DatabaseReference notificationsRef;
 
     public NotifiFragment() {
         // Required empty public constructor
@@ -61,6 +81,32 @@ public class NotifiFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifi, container, false);
+        View root = inflater.inflate(R.layout.fragment_notifi, container, false);
+        lista = root.findViewById(R.id.listaNotificaciones);
+        listaFirebase = new ArrayList<>();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        notificationsRef = FirebaseDatabase.getInstance().getReference("Notificaciones").child(user.getUid());
+
+        // Obtener las notificaciones del usuario
+        notificationsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot item : snapshot.getChildren()) {
+                    Notificacion notificacion = item.getValue(Notificacion.class);
+                    if (notificacion != null) {
+                        listaFirebase.add(notificacion);
+                    }
+                }
+                adapter = new notificacionAdapter(getContext(), listaFirebase);
+                lista.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return  root;
     }
 }

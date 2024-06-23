@@ -21,7 +21,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class registerActivity extends AppCompatActivity {
@@ -141,6 +148,7 @@ public class registerActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            createNotificationNode(currentUser.getUid(), "Bienvenido", "Tu cuenta ha sido creada exitosamente.");
                             Toast.makeText(registerActivity.this, "Registro Completado", Toast.LENGTH_SHORT).show();
                             UpdateUI();
                         } else {
@@ -151,9 +159,43 @@ public class registerActivity extends AppCompatActivity {
                 });
     }
 
+    private void createNotificationNode(String uid, String bienvenido, String s) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference notificationsRef = database.getReference("Notificaciones");
+
+        // Crear un nuevo nodo con el ID del usuario
+        DatabaseReference userNotificationsRef = notificationsRef.child(uid);
+
+        // Obtener la fecha y hora formateada
+        String dateTime = getFormattedDateTime();
+
+        // Crear una estructura de notificación
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("titulo", bienvenido);
+        notificationData.put("mensaje", s);
+        notificationData.put("fechaHora", dateTime);
+
+        // Agregar la notificación al nodo del usuario
+        userNotificationsRef.push().setValue(notificationData)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("Notificacion", "Notificacion creada");
+                        } else {
+                            Log.d("Notificacion", "Notificacion no creada");
+                        }
+                    }
+                });
+    }
+
     private void UpdateUI() {
         Intent inten = new Intent(getApplicationContext(), HomeActivity.class);
         startActivity(inten);
         finish();
+    }
+    public String getFormattedDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }
