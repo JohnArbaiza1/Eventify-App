@@ -7,7 +7,9 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -23,4 +25,10 @@ public interface eventoService {
 
     @GET("EventosUser/{id}")
     Call<List<Evento>> getEventoByUserId(@Path("id") String userId);
+
+    @PATCH("Eventos/{id}")
+    Call<Evento> updateEvent(@Path("id") String eventoId);
+
+    @DELETE("Eventos/{id}")
+    Call<Evento> deleteEvento(@Path("id") String eventoId);
 }
