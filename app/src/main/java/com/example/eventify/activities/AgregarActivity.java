@@ -29,8 +29,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.eventify.Fragments.DatePickerFragment;
 import com.example.eventify.Objets.Categoria;
 import com.example.eventify.Objets.Evento;
@@ -45,6 +47,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,11 +74,22 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
     public ImageView img_eventos;
     public EditText txt_nombre_eventos, txt_descripcion_eventos, txt_ubicacion_eventos, txt_cupos_eventos, txt_fecha_eventos;
     public Spinner spinner_categoria_eventos;
+    public TextView titulo;
     public Button btn_guardar_eventos;
     FirebaseAuth mAuth;
     FirebaseUser currenUser;
     public List<String> opcionesSpinner;
     public List<Categoria> categoriaList;
+    public String img;
+    public String nombre;
+    public String fechaCreacion;
+    public String fechaEvento;
+    public String ubicacion;
+    public String id;
+    public String asistencia;
+    public String categoria;
+    public String descripcion;
+    public String nombrePersona;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +103,21 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
         txt_cupos_eventos = findViewById(R.id.cupos_eventos);
         spinner_categoria_eventos = findViewById(R.id.spinner_eventos);
         btn_guardar_eventos = findViewById(R.id.btn_guardar_eventos);
+        titulo = findViewById(R.id.titulo);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if(extras != null){
+            img = extras.getString("imagenEvento");
+            nombre = extras.getString("nombreEvento");
+            fechaCreacion = extras.getString("fechaCreacion");
+            fechaEvento = extras.getString("fechaDelEvento");
+            ubicacion = extras.getString("ubicacionEvento");
+            id = extras.getString("id");
+            asistencia = extras.getString("asistenteEvento");
+            categoria = extras.getString("categoriaEvento");
+            descripcion = extras.getString("descripcionEvento");
+            nombrePersona = extras.getString("nombrePersona");
+        }
 
         txt_fecha_eventos = findViewById(R.id.input_fecha); // Asociar EditText de fecha
 
@@ -193,6 +222,10 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                         categoriaList.add(item);
                         //Toast.makeText(AgregarActivity.this, item.getIdCategoria(), Toast.LENGTH_SHORT).show();
                     }
+                    if(categoria != null){
+                        int opcion = adapter.getPosition(categoria);
+                        spinner_categoria_eventos.setSelection(opcion);
+                    }
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -206,6 +239,17 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
         // Agregar opciones al Spinner
         String[] opciones = {"Concierto", "Congreso", "Cumpleaños", "15 años", "Boda"};
         spinner_categoria_eventos.setAdapter(adapter);
+        if(img != null && nombre != null && descripcion != null && ubicacion != null && categoria != null && asistencia !=null && fechaEvento != null){
+            Picasso.get().load(img).into(img_eventos);
+            txt_nombre_eventos.setText(nombre);
+            txt_descripcion_eventos.setText(descripcion);
+            txt_ubicacion_eventos.setText(ubicacion);
+            txt_cupos_eventos.setText(asistencia);
+
+            txt_fecha_eventos.setText(fechaEvento);
+            btn_guardar_eventos.setText("Actualizar");
+            titulo.setText("Actualizando");
+        }
     }
 
     // Método para mostrar el DatePickerDialog

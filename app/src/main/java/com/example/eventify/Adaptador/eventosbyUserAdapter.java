@@ -1,6 +1,7 @@
 package com.example.eventify.Adaptador;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import androidx.fragment.app.FragmentManager;
 import com.example.eventify.Fragments.InvitacionesFragment;
 import com.example.eventify.Objets.Evento;
 import com.example.eventify.R;
+import com.example.eventify.activities.AgregarActivity;
+import com.example.eventify.activities.EventoDetalles;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -80,12 +83,36 @@ public class eventosbyUserAdapter extends BaseAdapter {
         btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent actualizar = new Intent(context, AgregarActivity.class);
+                actualizar.putExtra("id", temporal.getIdEvento().toString());
+                actualizar.putExtra("nombreEvento", temporal.getNombreEvento());
+                actualizar.putExtra("imagenEvento", temporal.getImg());
+                actualizar.putExtra("descripcionEvento", temporal.getDescripciN());
+                actualizar.putExtra("asistenteEvento", String.valueOf(temporal.getAsistentes()));
+                actualizar.putExtra("ubicacionEvento", temporal.getUbicacion());
+                actualizar.putExtra("fechaCreacion", temporal.getFechaCreacion());
+                actualizar.putExtra("fechaDelEvento", temporal.getFecha());
+                actualizar.putExtra("categoriaEvento", temporal.getCategoria());
+                actualizar.putExtra("nombrePersona", temporal.getUsername());
+                context.startActivity(actualizar);
                 Toast.makeText(context, "Editando", Toast.LENGTH_SHORT).show();
             }
         });
         btnVer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent eventosDetalles = new Intent(context, EventoDetalles.class);
+                eventosDetalles.putExtra("id", temporal.getIdEvento().toString());
+                eventosDetalles.putExtra("nombreEvento", temporal.getNombreEvento());
+                eventosDetalles.putExtra("imagenEvento", temporal.getImg());
+                eventosDetalles.putExtra("descripcionEvento", temporal.getDescripciN());
+                eventosDetalles.putExtra("asistenteEvento", String.valueOf(temporal.getAsistentes()));
+                eventosDetalles.putExtra("ubicacionEvento", temporal.getUbicacion());
+                eventosDetalles.putExtra("fechaCreacion", temporal.getFechaCreacion());
+                eventosDetalles.putExtra("fechaDelEvento", temporal.getFecha());
+                eventosDetalles.putExtra("categoriaEvento", temporal.getCategoria());
+                eventosDetalles.putExtra("nombrePersona", temporal.getUsername());
+                context.startActivity(eventosDetalles);
                 Toast.makeText(context, "Visualizando", Toast.LENGTH_SHORT).show();
             }
         });
