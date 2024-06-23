@@ -27,7 +27,7 @@ public interface eventoService {
     Call<List<Evento>> getEventoByUserId(@Path("id") String userId);
 
     @PATCH("Eventos/{id}")
-    Call<Evento> updateEvent(@Path("id") String eventoId);
+    Call<Evento> updateEvent(@Path("id") String eventoId, @Body Evento evento);
 
     @DELETE("Eventos/{id}")
     Call<Evento> deleteEvento(@Path("id") String eventoId);

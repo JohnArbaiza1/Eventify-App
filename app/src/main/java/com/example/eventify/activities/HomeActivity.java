@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.eventify.CustomTypefaceSpan;
 import com.example.eventify.Fragments.CategoriasFragment;
+import com.example.eventify.Fragments.EventsByUserFragment;
 import com.example.eventify.Fragments.HomeFragment;
 import com.example.eventify.Fragments.NotifiFragment;
 import com.example.eventify.Fragments.PerfilFragment;
@@ -80,6 +81,9 @@ public class HomeActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainerView, new RegisteredFragment())
                         .commit();
+                menuOpciones.setSelectedItemId(R.id.menuPerfil);
+            } else if (fragmentToOpen.equals("Eventos")) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new EventsByUserFragment()).commit();
                 menuOpciones.setSelectedItemId(R.id.menuPerfil);
             } else {
                 // Cargar el fragmento por defecto (por ejemplo, HomeFragment)
