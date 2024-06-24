@@ -163,13 +163,13 @@ public class PerfilFragment extends Fragment {
         imgEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Editando", Toast.LENGTH_SHORT).show();
+                actualizarPerfil();
             }
         });
         txtEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Editando", Toast.LENGTH_SHORT).show();
+                actualizarPerfil();
             }
         });
         imgDesactivar.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +186,16 @@ public class PerfilFragment extends Fragment {
         });
         return  root;
     }
+
+    private void actualizarPerfil() {
+        Bundle bundle = new Bundle();
+        bundle.putString("nombre",currentUser.getDisplayName());
+        bundle.putString("correo", currentUser.getEmail());
+        Fragment editarPerfil = new EditPerfilFragment();
+        editarPerfil.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, editarPerfil).commit();
+    }
+
     public void DesactivarCuenta(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
