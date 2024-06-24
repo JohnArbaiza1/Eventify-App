@@ -27,13 +27,21 @@ import com.example.eventify.services.eventoService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -152,20 +160,49 @@ public class eventosbyUserAdapter extends BaseAdapter {
                                 if(response.isSuccessful()){
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference cuposRef = database.getReference("Cupos");
+                                    DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
                                     DatabaseReference nodoEvento = cuposRef.child(String.valueOf(temporal.getIdEvento()));
-                                    nodoEvento.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                Toast.makeText(context, "Eliminado", Toast.LENGTH_SHORT).show();
-                                                listEventos.remove(position);
-                                                notifyDataSetChanged();
-                                            }
-                                            else{
-                                                Toast.makeText(context, "Error al eliminar de Firebase", Toast.LENGTH_SHORT).show();
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(snapshot.exists()){
+                                                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                    String userId = userSnapshot.getKey();
+                                                    String dateTime = getFormattedDateTime();
+                                                    // Crear una nueva notificación
+                                                    String notificationId = notifiacionesRef.child(userId).push().getKey();
+                                                    if (notificationId != null) {
+                                                        Map<String, Object> notificationData = new HashMap<>();
+                                                        notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
+                                                        notificationData.put("mensaje", "El evento: "+listEventos.get(position).getNombreEvento() +" Al que estabas Suscrito Ha sido Eliminado por el Anfitrion");
+                                                        notificationData.put("titulo", "Evento Eliminado");
+                                                        // Guardar la notificación en Firebase
+                                                        notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
+                                                        Log.d("Evento", "Nodo creado");
+                                                    }
+                                                }
+                                                nodoEvento.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if(task.isSuccessful()){
+                                                            Toast.makeText(context, "Eliminado", Toast.LENGTH_SHORT).show();
+                                                            listEventos.remove(position);
+                                                            notifyDataSetChanged();
+                                                        }
+                                                        else{
+                                                            Toast.makeText(context, "Error al eliminar de Firebase", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
                                             }
                                         }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(context, "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
+                                        }
                                     });
+
                                 }
                                 else{
                                     Log.d("Error -> ", response.message());
@@ -212,5 +249,9 @@ public class eventosbyUserAdapter extends BaseAdapter {
         }else{
             Toast.makeText(context, "Error: Parece que algo salio mal", Toast.LENGTH_SHORT).show();
         }
+    }
+    public String getFormattedDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }

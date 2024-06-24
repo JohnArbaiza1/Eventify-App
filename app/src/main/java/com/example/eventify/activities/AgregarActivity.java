@@ -45,6 +45,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -58,8 +63,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -173,7 +180,39 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                                                     if (response.isSuccessful()) {
                                                         Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
                                                         Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
-                                                        enviarHome();
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference cuposRef = database.getReference("Cupos");
+                                                        DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
+                                                        DatabaseReference nodoEvento = cuposRef.child(id);
+                                                        nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                if(snapshot.exists()){
+                                                                    Log.d("Prueba", "Prueba");
+                                                                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                                        String userId = userSnapshot.getKey();
+                                                                        String dateTime = getFormattedDateTime();
+                                                                        // Crear una nueva notificación
+                                                                        String notificationId = notifiacionesRef.child(userId).push().getKey();
+                                                                        if (notificationId != null) {
+                                                                            Map<String, Object> notificationData = new HashMap<>();
+                                                                            notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
+                                                                            notificationData.put("mensaje", "El evento: "+nombre +" Al que estas Suscrito Ha sido Modificado por el Anfitrion");
+                                                                            notificationData.put("titulo", "Evento Modificado");
+                                                                            // Guardar la notificación en Firebase
+                                                                            notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
+                                                                            Log.d("Evento", "Nodo creado");
+                                                                        }
+                                                                    }
+                                                                    enviarHome();
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                                Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
                                                     } else {
                                                         Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
                                                         Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
@@ -226,7 +265,39 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                                     if (response.isSuccessful()) {
                                         Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
                                         Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
-                                        enviarHome();
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference cuposRef = database.getReference("Cupos");
+                                        DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
+                                        DatabaseReference nodoEvento = cuposRef.child(id);
+                                        nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if(snapshot.exists()){
+                                                    Log.d("Prueba", "Prueba");
+                                                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                        String userId = userSnapshot.getKey();
+                                                        String dateTime = getFormattedDateTime();
+                                                        // Crear una nueva notificación
+                                                        String notificationId = notifiacionesRef.child(userId).push().getKey();
+                                                        if (notificationId != null) {
+                                                            Map<String, Object> notificationData = new HashMap<>();
+                                                            notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
+                                                            notificationData.put("mensaje", "El evento "+nombre +" Al que estas Suscrito Ha sido Modificado por el Anfitrion");
+                                                            notificationData.put("titulo", "Evento Modificado");
+                                                            // Guardar la notificación en Firebase
+                                                            notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
+                                                            Log.d("Evento", "Nodo creado");
+                                                        }
+                                                    }
+                                                    enviarHome();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     } else {
                                         Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
                                         Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
@@ -483,5 +554,10 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
         intent.putExtra("abrirInscripciones", "Eventos");
         startActivity(intent);
         finish();
+    }
+
+    public String getFormattedDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }
