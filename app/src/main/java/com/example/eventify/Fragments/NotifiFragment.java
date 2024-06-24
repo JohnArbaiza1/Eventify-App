@@ -92,14 +92,19 @@ public class NotifiFragment extends Fragment {
         notificationsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot item : snapshot.getChildren()) {
-                    Notificacion notificacion = item.getValue(Notificacion.class);
-                    if (notificacion != null) {
-                        listaFirebase.add(notificacion);
+                if(snapshot.exists()) {
+                    for (DataSnapshot item : snapshot.getChildren()) {
+                        Notificacion notificacion = item.getValue(Notificacion.class);
+                        if (notificacion != null) {
+                            listaFirebase.add(notificacion);
+                        }
                     }
+                    adapter = new notificacionAdapter(getContext(), listaFirebase);
+                    lista.setAdapter(adapter);
                 }
-                adapter = new notificacionAdapter(getContext(), listaFirebase);
-                lista.setAdapter(adapter);
+                else {
+                    Toast.makeText(getContext(), "Lista vacia", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
