@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity {
-    public ImageView agregar, buscar;
+    public ImageView agregar, buscar, agregarCategoria;
     public BottomNavigationView menuOpciones;
     private boolean isAdmin = false;
     private FirebaseAuth mAuth;
@@ -42,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         agregar = findViewById(R.id.imgAdd);
         buscar = findViewById(R.id.imgSearch);
+        agregarCategoria = findViewById(R.id.imgAgregarCategoria);
         menuOpciones = findViewById(R.id.menu);
         mAuth = FirebaseAuth.getInstance();
         isAdmin = checkIfUserIsAdmin();
@@ -85,6 +86,9 @@ public class HomeActivity extends AppCompatActivity {
             } else if (fragmentToOpen.equals("Eventos")) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new EventsByUserFragment()).commit();
                 menuOpciones.setSelectedItemId(R.id.menuPerfil);
+            }else if(fragmentToOpen.equals("AbrirCategoria")){
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new CategoriasFragment()).commit();
+                menuOpciones.setSelectedItemId(R.id.menuCategoria);
             } else {
                 // Cargar el fragmento por defecto (por ejemplo, HomeFragment)
                 getSupportFragmentManager().beginTransaction()
@@ -97,15 +101,27 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menuHome:
+                        agregarCategoria.setVisibility(View.INVISIBLE);
+                        agregar.setVisibility(View.VISIBLE);
+                        buscar.setVisibility(View.VISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new HomeFragment()).commit();
                         break;
                     case R.id.menuNotificaciones:
+                        agregarCategoria.setVisibility(View.INVISIBLE);
+                        agregar.setVisibility(View.INVISIBLE);
+                        buscar.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new NotifiFragment()).commit();
                         break;
                     case R.id.menuPerfil:
+                        agregarCategoria.setVisibility(View.INVISIBLE);
+                        agregar.setVisibility(View.INVISIBLE);
+                        buscar.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new PerfilFragment()).commit();
                         break;
                     case R.id.menuCategoria:
+                        agregarCategoria.setVisibility(View.VISIBLE);
+                        agregar.setVisibility(View.INVISIBLE);
+                        buscar.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, new CategoriasFragment()).commit();
                         break;
                 }
@@ -123,6 +139,13 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this, BuscarActivity.class);
+                startActivity(intent);
+            }
+        });
+        agregarCategoria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, AgregarCategoria.class);
                 startActivity(intent);
             }
         });
