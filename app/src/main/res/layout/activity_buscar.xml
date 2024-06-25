@@ -4,15 +4,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.BuscarActivity">
+    tools:context=".activities.BuscarActivity"
+    android:background="#BAEEDBD2">
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Buscador General"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Spinner
+        android:id="@+id/spinnerBusqueda"
+        android:layout_width="309dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerAPI"
+        android:layout_width="309dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="95dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/fechasBusqueda"
+        android:layout_width="309dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="7dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        android:focusable="false"
+        android:fontFamily="@font/aclonica"
+        android:hint="Fecha"
+        android:textAlignment="center"
+        android:inputType="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerAPI">
+    </EditText>
+
+    <ListView
+        android:id="@+id/listViewBusquedaGeneral"
+        android:layout_width="362dp"
+        android:layout_height="537dp"
+        android:layout_marginTop="232dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
