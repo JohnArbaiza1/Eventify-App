@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -123,6 +125,22 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<List<Evento>> call, Throwable t) {
                 Toast.makeText(getActivity(), "Error de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        txtBuscar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                eventosAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 

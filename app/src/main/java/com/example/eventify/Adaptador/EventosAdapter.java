@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,19 +17,23 @@ import com.example.eventify.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.eventify.activities.EventoDetalles;
 import com.squareup.picasso.Picasso;
 
-public class EventosAdapter extends BaseAdapter {
+public class EventosAdapter extends BaseAdapter implements Filterable {
 
     public Context context;
     public List<Evento> dataEvento;
+    private List<Evento> dataEventoOriginal;
+    private EventoFilter eventoFilter;
 
     public EventosAdapter(Context context, List<Evento> dataEvento) {
         this.context = context;
         this.dataEvento = dataEvento;
+        this.dataEventoOriginal = new ArrayList<>(dataEvento);
     }
 
     @Override
@@ -82,5 +88,45 @@ public class EventosAdapter extends BaseAdapter {
         Picasso.get().load(dataEvento.get(position).getImg()).into(imagenEventos);
 
         return convertView;
+    }
+
+    private class EventoFilter extends Filter{
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            List<Evento> filteredList = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(dataEventoOriginal);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (Evento evento : dataEventoOriginal) {
+                    if (evento.getNombreEvento().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(evento);
+                    }
+                }
+            }
+
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            dataEvento.clear();
+            dataEvento.addAll((List<Evento>) results.values);
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (eventoFilter == null) {
+            eventoFilter = new EventoFilter();
+        }
+        return eventoFilter;
     }
 }
