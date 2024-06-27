@@ -184,7 +184,7 @@ public class InvitacionesFragment extends Fragment {
         String regex = "^[\\w\\.-]+@([\\w-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
-        return matcher.matches() && email.contains("gmail.com");
+        return matcher.matches() && email.contains("gmail.com") || email.contains("ues.edu.sv");
     }
 
     //Metodo encargado de leer el archivo html
