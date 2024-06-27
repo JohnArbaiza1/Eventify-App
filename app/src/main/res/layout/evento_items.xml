@@ -12,8 +12,10 @@
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <ImageView
@@ -52,6 +54,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/fondo_info"
         android:fontFamily="@font/aclonica"
         android:text="UBICACION"
         android:textColor="@color/white"
@@ -60,18 +63,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView8"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.162" />
 
     <TextView
         android:id="@+id/asistenteEventos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="176dp"
+        android:layout_marginTop="204dp"
+        android:background="@drawable/fondo_info"
         android:fontFamily="@font/aclonica"
         android:text="ASISTENTE"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/imageView8"
-        app:layout_constraintHorizontal_bias="0.046"
+        app:layout_constraintHorizontal_bias="0.051"
         app:layout_constraintStart_toStartOf="@+id/imageView8"
         app:layout_constraintTop_toBottomOf="@+id/tituloEventos" />
 
