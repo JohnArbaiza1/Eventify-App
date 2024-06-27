@@ -224,6 +224,7 @@ public class PerfilFragment extends Fragment {
                     List<Integer> listaId = new ArrayList<>();
                     String emailCurrenUser = currentUser.getEmail();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Cupos");
+
                     databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -330,14 +331,24 @@ public class PerfilFragment extends Fragment {
 
     private void deleteAccount() {
         if (currentUser != null) {
+            String tem = currentUser.getUid();
             currentUser.delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(getContext(), "Cuenta Eliminada", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getContext(), MainActivity.class);
-                            startActivity(intent);
-                            getActivity().finish();
+                            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Notificaciones");
+                            databaseReference1.child(tem).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(getContext(), "Cuenta Eliminada", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(getContext(), MainActivity.class);
+                                        startActivity(intent);
+                                        getActivity().finish();
+                                    }
+                                }
+                            });
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -347,6 +358,8 @@ public class PerfilFragment extends Fragment {
                             Toast.makeText(getContext(), "Error al eliminar la cuenta", Toast.LENGTH_SHORT).show();
                         }
                     });
+
+
         }
     }
 }

@@ -39,6 +39,7 @@ public class EventoDetalles extends AppCompatActivity {
     public TextView txtNombreEvento, txtFechaDeEvento, txtFechaDeCreacion, txtUbicacionEvento,
             txtAsistenteEvento, txtCategoriaEvento, txtNombrePersona, txtDescripcionEvento;
     public DatabaseReference mdataBase;
+    public boolean cuposDisponibles;
     public FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class EventoDetalles extends AppCompatActivity {
         //llamada la referencia de Firebase
         mdataBase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        cuposDisponibles = true;
 
         imgEvento = findViewById(R.id.post_detail_image);
 
@@ -169,44 +171,54 @@ public class EventoDetalles extends AppCompatActivity {
                                             });
                                 }
                                 else {
-                                    Map<String, Object> correos = new HashMap<>();
-                                    correos.put(currenUser.getUid().toString(), currenUser.getEmail());
-                                    eventoRef.updateChildren(correos).
-                                            addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        btnInscribirseEvento.setText("Anular Inscripcion");
-                                                        int colorRojo = Color.rgb(255, 0, 0);
-                                                        btnInscribirseEvento.setBackgroundColor(colorRojo);
-                                                        Toast.makeText(EventoDetalles.this, "Registrado al Evento", Toast.LENGTH_SHORT).show();
-                                                        verificarCupos(id, asistencia);
-                                                    } else {
-                                                        Toast.makeText(EventoDetalles.this, "Error al registrarse", Toast.LENGTH_SHORT).show();
+                                    if(cuposDisponibles){
+                                        Map<String, Object> correos = new HashMap<>();
+                                        correos.put(currenUser.getUid().toString(), currenUser.getEmail());
+                                        eventoRef.updateChildren(correos).
+                                                addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            btnInscribirseEvento.setText("Anular Inscripcion");
+                                                            int colorRojo = Color.rgb(255, 0, 0);
+                                                            btnInscribirseEvento.setBackgroundColor(colorRojo);
+                                                            Toast.makeText(EventoDetalles.this, "Registrado al Evento", Toast.LENGTH_SHORT).show();
+                                                            verificarCupos(id, asistencia);
+                                                        } else {
+                                                            Toast.makeText(EventoDetalles.this, "Error al registrarse", Toast.LENGTH_SHORT).show();
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                                    }
+                                    else{
+                                        Toast.makeText(EventoDetalles.this, "Los cupos se han Agotado", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
                             else{
-                                Map<String, Object> datosEvento = new HashMap<>();
-                                datosEvento.put(currenUser.getUid().toString(),currenUser.getEmail());
-                                eventoRef.setValue(datosEvento).
-                                        addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                btnInscribirseEvento.setText("Anular Inscripcion");
-                                                int colorRojo = Color.rgb(255, 0, 0);
-                                                btnInscribirseEvento.setBackgroundColor(colorRojo);
-                                                Toast.makeText(EventoDetalles.this, "Agregado", Toast.LENGTH_SHORT).show();
-                                                verificarCupos(id, asistencia);
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(EventoDetalles.this, "Fallo", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                if(cuposDisponibles){
+                                    Map<String, Object> datosEvento = new HashMap<>();
+                                    datosEvento.put(currenUser.getUid().toString(),currenUser.getEmail());
+                                    eventoRef.setValue(datosEvento).
+                                            addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    btnInscribirseEvento.setText("Anular Inscripcion");
+                                                    int colorRojo = Color.rgb(255, 0, 0);
+                                                    btnInscribirseEvento.setBackgroundColor(colorRojo);
+                                                    Toast.makeText(EventoDetalles.this, "Agregado", Toast.LENGTH_SHORT).show();
+                                                    verificarCupos(id, asistencia);
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(EventoDetalles.this, "Fallo", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                                else{
+                                    Toast.makeText(EventoDetalles.this, "Cupos agotados", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
 
@@ -216,8 +228,6 @@ public class EventoDetalles extends AppCompatActivity {
                         }
                     });
                 }
-
-
             }
         });
     }
@@ -235,7 +245,10 @@ public class EventoDetalles extends AppCompatActivity {
                         correos.add(correo);
                     }
                     String cupos = String.valueOf(Integer.parseInt(asistenteEvento)-correos.size());
-                    txtAsistenteEvento.setText("Cupos: "+cupos);
+                    if(Integer.parseInt(cupos) == 0){
+                        cuposDisponibles = false;
+                    }
+                    txtAsistenteEvento.setText("Cupos Disponibles: "+cupos);
                 }
                 else{
                     txtAsistenteEvento.setText("Cupos: "+asistenteEvento);

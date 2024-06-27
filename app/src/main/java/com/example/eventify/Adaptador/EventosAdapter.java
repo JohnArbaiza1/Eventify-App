@@ -82,8 +82,8 @@ public class EventosAdapter extends BaseAdapter implements Filterable {
         });
 
         titulo.setText(dataEvento.get(position).getNombreEvento());
-        asistentes.setText(String.valueOf(dataEvento.get(position).getAsistentes()));
-        ubicacion.setText(dataEvento.get(position).getUbicacion());
+        asistentes.setText("Fecha del Evento: "+dataEvento.get(position).getFecha());
+        ubicacion.setText("Lugar: " + dataEvento.get(position).getUbicacion());
 
         Picasso.get().load(dataEvento.get(position).getImg()).into(imagenEventos);
 

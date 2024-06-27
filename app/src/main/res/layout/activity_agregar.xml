@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/aclonica"
             android:hint="Cupos"
-            android:inputType="textPersonName"/>
+            android:inputType="number"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
