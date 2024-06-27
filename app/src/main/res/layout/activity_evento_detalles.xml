@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.EventoDetalles"
-    android:background="#D3D3D3">
+    android:background="#FEFCF8">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -92,30 +92,14 @@
 
         <TextView
             android:id="@+id/descripcionEventosDetalle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="380dp"
+            android:layout_height="56dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:textAlignment="textStart"
             android:fontFamily="@font/aclonica"
             android:text="Descripcion"
-            android:textColor="#5D4037"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fechaDelEvento" />
-
-        <TextView
-            android:id="@+id/ubicacionEventosDetalle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/aclonica"
-            android:lineSpacingExtra="8dp"
-            android:text="San Miguel, El Salvador"
+            android:textAlignment="textStart"
             android:textColor="#5D4037"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -127,14 +111,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="100dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/aclonica"
             android:lineSpacingExtra="8dp"
             android:text="20 personas."
             android:textColor="#5D4037"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fechaDelEvento" />
 
@@ -143,14 +127,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="132dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/aclonica"
             android:lineSpacingExtra="8dp"
             android:text="BODA."
             android:textColor="#5D4037"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fechaDelEvento" />
 
@@ -159,14 +143,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="160dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/aclonica"
             android:lineSpacingExtra="8dp"
             android:text="ANGEL GUARDADO."
             android:textColor="#5D4037"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fechaDelEvento" />
 
@@ -184,10 +168,26 @@
             android:text="INSCRIBIRSE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.94"
+            app:layout_constraintHorizontal_bias="0.944"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nombrePersonaDetalle"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/ubicacionEventosDetalle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="72dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/aclonica"
+            android:lineSpacingExtra="8dp"
+            android:text="San Miguel, El Salvador"
+            android:textColor="#5D4037"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fechaDelEvento" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
