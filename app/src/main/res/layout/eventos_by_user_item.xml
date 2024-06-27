@@ -108,6 +108,7 @@
         android:text="Invitar"
         android:textStyle="bold"
         app:icon="@drawable/friend"
+        android:backgroundTint="#83C0E1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView19" />
 

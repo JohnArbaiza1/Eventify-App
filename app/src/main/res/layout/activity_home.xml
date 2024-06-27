@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.HomeActivity"
-    android:background="#BAEEDBD2"
+    android:background="#FEFCF8"
     >
 
     <ImageView
@@ -75,7 +75,7 @@
         android:name="com.example.eventify.Fragments.HomeFragment"
         android:layout_width="397dp"
         android:layout_height="626dp"
-        android:background="#B0EEDBD2"
+        android:background="#FEFCF8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.428"
