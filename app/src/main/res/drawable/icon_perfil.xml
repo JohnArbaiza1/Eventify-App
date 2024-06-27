@@ -3,7 +3,7 @@
     <item
         android:width="125dp"
         android:height="125dp"
-        android:drawable="@drawable/addimagen"
+        android:drawable="@drawable/perfil"
         android:gravity="center">
     </item>
 </layer-list>
