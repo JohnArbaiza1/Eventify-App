@@ -81,7 +81,7 @@
         android:text="Visualizar"
         android:textSize="14dp"
         android:textStyle="bold"
-        android:backgroundTint="#125510"
+        android:backgroundTint="#83C0E1"
         app:icon="@drawable/icon_see"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.542"
