@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="40dp"
     android:orientation="vertical"
-    android:background="#F0EAD6"
+    android:background="#FEFCF8"
     tools:context=".activities.EditarCategoria">
 
     <TextView
