@@ -100,11 +100,15 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
     public String categoria;
     public String descripcion;
     public String nombrePersona;
+    public DatabaseReference mdataBase;
+    public Integer cantidad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar);
+        mdataBase = FirebaseDatabase.getInstance().getReference();
+        cantidad = 0;
 
         img_eventos = findViewById(R.id.img_eventos);
         txt_nombre_eventos = findViewById(R.id.nombre_eventos);
@@ -127,6 +131,7 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
             categoria = extras.getString("categoriaEvento");
             descripcion = extras.getString("descripcionEvento");
             nombrePersona = extras.getString("nombrePersona");
+            verificarCupos(id);
         }
 
         txt_fecha_eventos = findViewById(R.id.input_fecha); // Asociar EditText de fecha
@@ -149,7 +154,175 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
             @Override
             public void onClick(View v) {
                 if(btn_guardar_eventos.getText().equals("Actualizar")){
-                    if(pickedImgUri != null){
+                    if(actualizar() && validarCampos()){
+                        if (pickedImgUri != null) {
+                            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("events_images");
+                            StorageReference imageFilePath = storageReference.child(pickedImgUri.getLastPathSegment());
+                            imageFilePath.putFile(pickedImgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    imageFilePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            //****************** ACTUALIZAR EVENTO CON IMAGEN DIFERENTE **********************************//
+                                            String image_download_link = uri.toString();
+                                            Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
+                                            Retrofit retrofit = new Retrofit.Builder()
+                                                    .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
+                                                    .addConverterFactory(GsonConverterFactory.create())
+                                                    .build();
+                                            eventoService eventoservice = retrofit.create(eventoService.class);
+                                            Evento evento = new Evento(Integer.parseInt(id), txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
+                                                    txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
+                                                    currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), image_download_link, fechaCreacion());
+
+                                            Log.d("Actualizar", "Evento a guardar: " + new Gson().toJson(evento));
+
+                                            Call<Evento> actualizarEvento = eventoservice.updateEvent(id, evento);
+                                            actualizarEvento.enqueue(new Callback<Evento>() {
+                                                @Override
+                                                public void onResponse(Call<Evento> call, Response<Evento> response) {
+                                                    try {
+                                                        if (response.isSuccessful()) {
+                                                            Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
+                                                            Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
+                                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                            DatabaseReference cuposRef = database.getReference("Cupos");
+                                                            DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
+                                                            DatabaseReference nodoEvento = cuposRef.child(id);
+                                                            nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                    if (snapshot.exists()) {
+                                                                        Log.d("Prueba", "Prueba");
+                                                                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                                            String userId = userSnapshot.getKey();
+                                                                            String dateTime = getFormattedDateTime();
+                                                                            // Crear una nueva notificación
+                                                                            String notificationId = notifiacionesRef.child(userId).push().getKey();
+                                                                            if (notificationId != null) {
+                                                                                Map<String, Object> notificationData = new HashMap<>();
+                                                                                notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
+                                                                                notificationData.put("mensaje", "El evento: " + nombre + " Al que estas Suscrito Ha sido Modificado por el Anfitrion");
+                                                                                notificationData.put("titulo", "Evento Modificado");
+                                                                                // Guardar la notificación en Firebase
+                                                                                notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
+                                                                                Log.d("Evento", "Nodo creado");
+                                                                            }
+                                                                        }
+                                                                        enviarHome();
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                                    Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                        } else {
+                                                            Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
+                                                            Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Evento> call, Throwable t) {
+                                                    Log.e("AgregarEvento", "Error al agregar evento", t);
+                                                    Toast.makeText(AgregarActivity.this, "Fallo: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(AgregarActivity.this, "Error " + e, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(AgregarActivity.this, "Error " + e, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            eventoService eventoservice = retrofit.create(eventoService.class);
+                            Evento evento = new Evento(Integer.parseInt(id), txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
+                                    txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
+                                    currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), img, fechaCreacion());
+
+                            Log.d("Actualizar", "Evento a guardar: " + new Gson().toJson(evento));
+
+                            Call<Evento> actualizarEvento = eventoservice.updateEvent(id, evento);
+                            actualizarEvento.enqueue(new Callback<Evento>() {
+                                @Override
+                                public void onResponse(Call<Evento> call, Response<Evento> response) {
+                                    try {
+                                        if (response.isSuccessful()) {
+                                            Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
+                                            Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference cuposRef = database.getReference("Cupos");
+                                            DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
+                                            DatabaseReference nodoEvento = cuposRef.child(id);
+                                            nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if (snapshot.exists()) {
+                                                        Log.d("Prueba", "Prueba");
+                                                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                            String userId = userSnapshot.getKey();
+                                                            String dateTime = getFormattedDateTime();
+                                                            // Crear una nueva notificación
+                                                            String notificationId = notifiacionesRef.child(userId).push().getKey();
+                                                            if (notificationId != null) {
+                                                                Map<String, Object> notificationData = new HashMap<>();
+                                                                notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
+                                                                notificationData.put("mensaje", "El evento " + nombre + " Al que estas Suscrito Ha sido Modificado por el Anfitrion");
+                                                                notificationData.put("titulo", "Evento Modificado");
+                                                                // Guardar la notificación en Firebase
+                                                                notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
+                                                                Log.d("Evento", "Nodo creado");
+                                                            }
+                                                        }
+                                                        enviarHome();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        } else {
+                                            Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
+                                            Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Evento> call, Throwable t) {
+                                    Log.e("AgregarEvento", "Error al agregar evento", t);
+                                    Toast.makeText(AgregarActivity.this, "Fallo: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                }
+                else{
+                    if(validarCampos()) {
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("events_images");
                         StorageReference imageFilePath = storageReference.child(pickedImgUri.getLastPathSegment());
                         imageFilePath.putFile(pickedImgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -158,61 +331,32 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                                 imageFilePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
-                                        //****************** ACTUALIZAR EVENTO CON IMAGEN DIFERENTE **********************************//
+                                        //****************** LOGICA PARA AGREGAR EVENTO **********************************//
+
                                         String image_download_link = uri.toString();
                                         Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
+
                                         Retrofit retrofit = new Retrofit.Builder()
                                                 .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
                                                 .addConverterFactory(GsonConverterFactory.create())
                                                 .build();
                                         eventoService eventoservice = retrofit.create(eventoService.class);
-                                        Evento evento = new Evento(Integer.parseInt(id), txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
+                                        Evento evento = new Evento(0, txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
                                                 txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
                                                 currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), image_download_link, fechaCreacion());
 
-                                        Log.d("Actualizar", "Evento a guardar: " + new Gson().toJson(evento));
+                                        Log.d("AgregarEvento", "Evento a guardar: " + new Gson().toJson(evento));
 
-                                        Call<Evento> actualizarEvento = eventoservice.updateEvent(id, evento);
-                                        actualizarEvento.enqueue(new Callback<Evento>() {
+                                        Call<Evento> guardarEvento = eventoservice.saveEvento(evento);
+                                        guardarEvento.enqueue(new Callback<Evento>() {
                                             @Override
                                             public void onResponse(Call<Evento> call, Response<Evento> response) {
                                                 try {
                                                     if (response.isSuccessful()) {
-                                                        Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
-                                                        Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
-                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                        DatabaseReference cuposRef = database.getReference("Cupos");
-                                                        DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
-                                                        DatabaseReference nodoEvento = cuposRef.child(id);
-                                                        nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                if(snapshot.exists()){
-                                                                    Log.d("Prueba", "Prueba");
-                                                                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                                                        String userId = userSnapshot.getKey();
-                                                                        String dateTime = getFormattedDateTime();
-                                                                        // Crear una nueva notificación
-                                                                        String notificationId = notifiacionesRef.child(userId).push().getKey();
-                                                                        if (notificationId != null) {
-                                                                            Map<String, Object> notificationData = new HashMap<>();
-                                                                            notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
-                                                                            notificationData.put("mensaje", "El evento: "+nombre +" Al que estas Suscrito Ha sido Modificado por el Anfitrion");
-                                                                            notificationData.put("titulo", "Evento Modificado");
-                                                                            // Guardar la notificación en Firebase
-                                                                            notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
-                                                                            Log.d("Evento", "Nodo creado");
-                                                                        }
-                                                                    }
-                                                                    enviarHome();
-                                                                }
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
+                                                        Log.d("AgregarEvento", "Evento guardado: " + new Gson().toJson(response.body()));
+                                                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                                        Toast.makeText(AgregarActivity.this, "Agregado", Toast.LENGTH_SHORT).show();
+                                                        startActivity(intent);
                                                     } else {
                                                         Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
                                                         Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
@@ -233,153 +377,17 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AgregarActivity.this, "Error " + e, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AgregarActivity.this, "Error " + e, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
-                    else{
-                        Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-                        eventoService eventoservice = retrofit.create(eventoService.class);
-                        Evento evento = new Evento(Integer.parseInt(id), txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
-                                txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
-                                currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), img, fechaCreacion());
-
-                        Log.d("Actualizar", "Evento a guardar: " + new Gson().toJson(evento));
-
-                        Call<Evento> actualizarEvento = eventoservice.updateEvent(id, evento);
-                        actualizarEvento.enqueue(new Callback<Evento>() {
-                            @Override
-                            public void onResponse(Call<Evento> call, Response<Evento> response) {
-                                try {
-                                    if (response.isSuccessful()) {
-                                        Log.d("Actualizar Evento", "Evento guardado: " + new Gson().toJson(response.body()));
-                                        Toast.makeText(AgregarActivity.this, "Evento Actualizado", Toast.LENGTH_SHORT).show();
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference cuposRef = database.getReference("Cupos");
-                                        DatabaseReference notifiacionesRef = database.getReference("Notificaciones");
-                                        DatabaseReference nodoEvento = cuposRef.child(id);
-                                        nodoEvento.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if(snapshot.exists()){
-                                                    Log.d("Prueba", "Prueba");
-                                                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                                        String userId = userSnapshot.getKey();
-                                                        String dateTime = getFormattedDateTime();
-                                                        // Crear una nueva notificación
-                                                        String notificationId = notifiacionesRef.child(userId).push().getKey();
-                                                        if (notificationId != null) {
-                                                            Map<String, Object> notificationData = new HashMap<>();
-                                                            notificationData.put("fechaHora", dateTime); // Método para obtener la fecha y hora actual
-                                                            notificationData.put("mensaje", "El evento "+nombre +" Al que estas Suscrito Ha sido Modificado por el Anfitrion");
-                                                            notificationData.put("titulo", "Evento Modificado");
-                                                            // Guardar la notificación en Firebase
-                                                            notifiacionesRef.child(userId).child(notificationId).setValue(notificationData);
-                                                            Log.d("Evento", "Nodo creado");
-                                                        }
-                                                    }
-                                                    enviarHome();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Toast.makeText(getApplicationContext(), "Error al obtener los usuarios inscritos", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } else {
-                                        Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
-                                        Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Evento> call, Throwable t) {
-                                Log.e("AgregarEvento", "Error al agregar evento", t);
-                                Toast.makeText(AgregarActivity.this, "Fallo: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                }
-                else{
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("events_images");
-                    StorageReference imageFilePath = storageReference.child(pickedImgUri.getLastPathSegment());
-                    imageFilePath.putFile(pickedImgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            imageFilePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    //****************** LOGICA PARA AGREGAR EVENTO **********************************//
-
-                                    String image_download_link = uri.toString();
-                                    Categoria categoriaSeleccionada = buscarCategoriaPorNombre(categoriaList, spinner_categoria_eventos.getSelectedItem().toString());
-
-                                    Retrofit retrofit = new Retrofit.Builder()
-                                            .baseUrl("https://eventify-api-rest-production.up.railway.app/api/")
-                                            .addConverterFactory(GsonConverterFactory.create())
-                                            .build();
-                                    eventoService eventoservice = retrofit.create(eventoService.class);
-                                    Evento evento = new Evento(0, txt_nombre_eventos.getText().toString(), Integer.parseInt(txt_cupos_eventos.getText().toString()),
-                                            txt_descripcion_eventos.getText().toString(), txt_ubicacion_eventos.getText().toString(), txt_fecha_eventos.getText().toString(), currenUser.getUid(),
-                                            currenUser.getDisplayName(), categoriaSeleccionada.getIdCategoria(), categoriaSeleccionada.getCategoria(), image_download_link, fechaCreacion());
-
-                                    Log.d("AgregarEvento", "Evento a guardar: " + new Gson().toJson(evento));
-
-                                    Call<Evento> guardarEvento = eventoservice.saveEvento(evento);
-                                    guardarEvento.enqueue(new Callback<Evento>() {
-                                        @Override
-                                        public void onResponse(Call<Evento> call, Response<Evento> response) {
-                                            try {
-                                                if (response.isSuccessful()) {
-                                                    Log.d("AgregarEvento", "Evento guardado: " + new Gson().toJson(response.body()));
-                                                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-                                                    Toast.makeText(AgregarActivity.this, "Agregado", Toast.LENGTH_SHORT).show();
-                                                    startActivity(intent);
-                                                } else {
-                                                    Log.e("AgregarEvento", "Error en la respuesta: " + response.errorBody().string());
-                                                    Toast.makeText(AgregarActivity.this, "Fallo: " + response.message(), Toast.LENGTH_LONG).show();
-                                                }
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Evento> call, Throwable t) {
-                                            Log.e("AgregarEvento", "Error al agregar evento", t);
-                                            Toast.makeText(AgregarActivity.this, "Fallo: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AgregarActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
-                        }
-                    });
                 }
             }
         });
@@ -428,6 +436,79 @@ public class AgregarActivity extends AppCompatActivity implements DatePickerDial
             btn_guardar_eventos.setText("Actualizar");
             titulo.setText("Actualizando");
         }
+    }
+    private void verificarCupos(String id) {
+        DatabaseReference eventoRef = mdataBase.child("Cupos").child(id);
+        eventoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    List<String> correos = new ArrayList<>();
+                    for (DataSnapshot item: snapshot.getChildren()) {
+                        String correo = item.getValue(String.class);
+                        correos.add(correo);
+                    }
+                    cantidad = correos.size();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AgregarActivity.this, "Error al llamar la Base de datos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private boolean actualizar(){
+        boolean estado = false;
+        Integer cuposNuevos = Integer.parseInt(txt_cupos_eventos.getText().toString());
+        verificarCupos(id);
+        if(cuposNuevos <= 0){
+            estado = false;
+            Toast.makeText(this, "No se puede ingresar cantidades de cupos menores a 0", Toast.LENGTH_SHORT).show();
+        } else if (cantidad > cuposNuevos) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Error al modificar cupos");
+            builder.setMessage("Ya estan usuarios registrados mayor a la capacidad que se quiere establecer");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder.show().create();
+            estado = false;
+        } else{
+            Log.d("Estado", String.valueOf(cantidad));
+            estado = true;
+        }
+        return estado;
+    }
+    private boolean validarCampos(){
+        boolean camposValidar = false;
+        String nombreValidar = txt_nombre_eventos.getText().toString().trim();
+        String descripcionValidar = txt_descripcion_eventos.getText().toString().trim();
+        String ubicacionValidar = txt_ubicacion_eventos.getText().toString().trim();
+        String cuposValidar = txt_cupos_eventos.getText().toString().trim();
+        String fechaValidar = txt_fecha_eventos.getText().toString().trim();
+        if(nombreValidar.isEmpty()){
+            txt_nombre_eventos.setError("Campo vacio");
+            camposValidar = false;
+        } else if (descripcionValidar.isEmpty()) {
+            txt_descripcion_eventos.setError("Campo Vacio");
+            camposValidar = false;
+        } else if (ubicacionValidar.isEmpty()) {
+            txt_ubicacion_eventos.setError("Campo Vacio");
+            camposValidar = false;
+        } else if (cuposValidar.isEmpty()) {
+            txt_cupos_eventos.setError("Campo Vacio");
+            camposValidar = false;
+        } else if (fechaValidar.isEmpty()) {
+            txt_fecha_eventos.setError("Campo Vacio");
+            camposValidar = false;
+        }
+        else{
+            camposValidar = true;
+        }
+        return camposValidar;
     }
 
     // Método para mostrar el DatePickerDialog
